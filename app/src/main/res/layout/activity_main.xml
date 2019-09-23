@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:outlineProvider="bounds"
+        android:clipToPadding="false"
+        android:padding="3dp"
+        tools:context=".MainActivity">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="384dp"
+            android:layout_height="774dp"
+            tools:layout_editor_absoluteY="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/choose_busline"
+                android:elevation="10dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:paddingBottom="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="4">
+            <TextView
+                    android:text="@string/chooseLine"
+                    android:layout_width="366dp"
+                    android:gravity="center"
+                    android:textSize="40dp"
+                    android:paddingRight="10dp"
+                    android:layout_height="wrap_content" android:id="@+id/textView2"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="444dp"
+                android:layout_weight="2">
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:gravity="center"
+                    android:hint="@string/busline"
+                    android:ems="10"
+                    android:id="@+id/busline"/>
+            <Button
+                    android:text="@string/check"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/bCheck"/>
+        </LinearLayout>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:id="@+id/fragmentContainer"
+            android:layout_weight="2"/>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

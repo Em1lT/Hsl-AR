@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">HSL AR</string>
+    <string name="chooseLine">choose busline</string>
+    <string name="busline">busline number</string>
+    <string name="check">check</string>
+    <string name="bus">bus</string>
+    <string name="speed">speed</string>
+    <string name="lat">lat</string>
+    <string name="longi">longi</string>
+    <string name="odo">odo</string>
+    <string name="door_status">door status</string>
+    <string name="stop">stop</string>
+    <string name="event">event</string>
+    <string name="heading">heading</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HSL AR</string>
+    <string name="chooseLine">Valitse bussilinja</string>
+    <string name="busline">bussilinjan numero</string>
+    <string name="check">tarkista</string>
+    <string name="bus">bussi</string>
+    <string name="speed">nopeus</string>
+    <string name="lat">lat</string>
+    <string name="longi">long</string>
+    <string name="door_status">bussin ovet</string>
+    <string name="odo">matkan pituus</string>
+    <string name="stop">pysäkki</string>
+    <string name="event">tapahtuma</string>
+    <string name="heading">suunta</string>
+</resources>
