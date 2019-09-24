@@ -43,7 +43,7 @@ class BusListFragment(val routeModel: RouteModel, val hslId: Int) : Fragment(), 
         adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, list)
         view.bussesList.adapter = adapter
 
-        view.bussesList.setOnItemClickListener { adapterView, _, i, _ ->
+        view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
                 putExtra("bus", list[i])
                 putExtra("HslId", hslId)
@@ -111,6 +111,5 @@ class BusListFragment(val routeModel: RouteModel, val hslId: Int) : Fragment(), 
         //TODO: mqttService disconnect from the client(When trying to disconnect it crashes)
         //mqttService.disconnect()
         mqttService.unsubscribe(topic)
-
     }
 }
