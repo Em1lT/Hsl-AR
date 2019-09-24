@@ -238,22 +238,23 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
 
 
         //TODO: Now it always shows the last stop for the whole time and is updated only when new station is in the radius -> when bus leaves the stop radius clear text
-        if(nullCount % 10 == 0 && stopNum != "null"){
-            Log.d("Main", "get stop")
+        if(nullCount % 10 == 0){
+            if(stopNum != "null") {
+                Log.d("Main", "get stop")
 
-            var json = JSONObject()
-            json.put("query", "{stop(id: \"HSL:$stopNum\"){name lat lon}}")
-            val res = httpService.postRequest(json)
-            var data = JSONObject(JSONObject(res).getString("data")).getString("stop")
+                var json = JSONObject()
+                json.put("query", "{stop(id: \"HSL:$stopNum\"){name lat lon}}")
+                val res = httpService.postRequest(json)
+                var data = JSONObject(JSONObject(res).getString("data")).getString("stop")
 
-
-            if(data == "null"){
-                stop.text = "no current stop"
-            }else{
                 Log.d("Main", JSONObject(data).getString("name"))
                 stop.text = JSONObject(data).getString("name")
+                nullCount = 1
+
+            } else {
+                stop.text = ""
+                nullCount = 1
             }
-            nullCount = 1
         }else {
             nullCount++
         }
