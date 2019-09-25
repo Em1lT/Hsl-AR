@@ -60,8 +60,7 @@ class MainActivity : AppCompatActivity() {
     fun callback(routeModel: RouteModel) {
         startFragment(
             BusListFragment(
-                routeModel,
-                routeModel.gtfsId.substringAfter(":").toInt()
+                routeModel
             )
         )
     }

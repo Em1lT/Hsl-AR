@@ -41,7 +41,6 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         setContentView(R.layout.activity_single_bus_detail)
 
         bus = intent.extras.getSerializable("bus") as BusDetailModel
-        val hslId = intent.extras.getInt("HslId")
 
         httpService = HttpService()
         var busVeh = ""
@@ -65,7 +64,9 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
                     item.getString("name"),
                     item.getString("lat"),
                     item.getString("lon"),
-                    item.getString("zoneId")
+                    item.getString("zoneId"),
+                    item.getString("code"),
+                    item.getString("desc")
                 )
             )
         }
@@ -91,20 +92,23 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
 
         for(item in list){
             val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
-            googleMap.addMarker(MarkerOptions().position(latLng).title(item.name).snippet("Zone: ${item.zoneId}").icon(
+            googleMap.addMarker(MarkerOptions().position(latLng).title(item.name)
+                .snippet("Zone: ${item.zoneId} desc: ${item.desc}")
+                .icon(
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
 
         }
         val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
         busMarker = googleMap.addMarker(MarkerOptions()
             .position(latLng)
-            .title("this"))
+            .title(bus.veh)
+        )
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f))
     }
     fun createPostJsonArr(route: String): JSONArray{
         var stopArray: JSONArray = JSONArray()
         val json = JSONObject()
-        json.put("query", "{routes(name:\"${route}\"){ stops {gtfsId name lat lon zoneId}}}")
+        json.put("query", "{routes(name:\"${route}\"){ stops {gtfsId name lat lon zoneId code desc}}}")
         val res = httpService.postRequest(json)
         val data = JSONArray(JSONObject(JSONObject(res).getString("data")).getString("routes"))
         val stopNames = JSONObject(data[0].toString()).getString("stops")
@@ -118,7 +122,6 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
         googleMap.let {
             busMarker.position =  latLng
-            busMarker.title = bus.veh
         }
     }
 
@@ -236,8 +239,6 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     }
     private fun checkStation(stopNum: String) {
 
-
-        //TODO: Now it always shows the last stop for the whole time and is updated only when new station is in the radius -> when bus leaves the stop radius clear text
         if(nullCount % 10 == 0){
             if(stopNum != "null") {
                 Log.d("Main", "get stop")

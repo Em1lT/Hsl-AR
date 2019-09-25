@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_bus_list.view.*
 import org.json.JSONObject
 
 @SuppressLint("ValidFragment")
-class BusListFragment(val routeModel: RouteModel, val hslId: Int) : Fragment(), Observer {
+class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
 
     lateinit var adapter: BusListAdapter
     lateinit var mqttService: MqttServiceCaller
@@ -46,7 +46,6 @@ class BusListFragment(val routeModel: RouteModel, val hslId: Int) : Fragment(), 
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
                 putExtra("bus", list[i])
-                putExtra("HslId", hslId)
             }
             Log.d("Main", "deregister Fragment")
             mqttService.deRegisterObserverFragment(this)
@@ -104,10 +103,9 @@ class BusListFragment(val routeModel: RouteModel, val hslId: Int) : Fragment(), 
                     }
                 }
                 list.add(newBus)
-                adapter.notifyDataSetChanged()
         }
         }
-        Log.d("Main", "end")
+        adapter.notifyDataSetChanged()
         //TODO: mqttService disconnect from the client(When trying to disconnect it crashes)
         //mqttService.disconnect()
         mqttService.unsubscribe(topic)
