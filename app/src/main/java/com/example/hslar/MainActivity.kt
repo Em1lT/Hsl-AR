@@ -1,16 +1,27 @@
 package com.example.hslar
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
 import org.json.JSONObject
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
+import android.util.Log
 import com.example.hslar.Fragments.BusListFragment
 import com.example.hslar.Fragments.BusRouteFragment
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Services.HttpService
+import com.example.hslar.Services.LocationService
 
 
 //TODO: Create strings values for all the texts
@@ -25,17 +36,38 @@ import com.example.hslar.Services.HttpService
 class MainActivity : AppCompatActivity() {
 
     lateinit var httpService: HttpService
+    lateinit var  locationService: LocationService
 
+    private val PERMISSION_CODE = 10
+
+    @SuppressLint("ObsoleteSdkInt")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
+            || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED){
+
+            val permission = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            requestPermissions(permission, PERMISSION_CODE)
+        }
+
         httpService = HttpService()
+        locationService = LocationService(this)
+
 
         bCheck.setOnClickListener {
-            getbusId(busline.text.toString())
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                getLocation()
+                getbusId(busline.text.toString())
+            } else {
+                //TODO: Create notification service
+            }
         }
     }
-
+    fun getLocation(){
+        locationService.getLocation()
+    }
     fun getbusId(busLine: String) {
         var json = JSONObject()
         json.put("query", "{routes(name:\"$busLine\"){gtfsId shortName longName mode}}")
