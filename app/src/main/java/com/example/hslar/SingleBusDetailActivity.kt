@@ -51,7 +51,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         }
         busVeh += bus.veh
 
-        topic = "/hfp/v2/journey/ongoing/+/bus/+/$busVeh/${bus.route}/+/+/+/+/+/#"
+        topic = "/hfp/v2/journey/ongoing/+/+/+/$busVeh/${bus.route}/+/+/+/+/+/#"
         Log.d("Main", topic)
         //busNum.text = bus.desi
         mqttService = MqttServiceCaller(this, topic)

@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-                                             android:layout_height="wrap_content">
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
 
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="384dp"
+            android:layout_width="251dp"
             android:gravity="center"
-            android:layout_height="60dp"
+            android:layout_height="56dp"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:id="@+id/linearLayout2">>
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:id="@+id/linearLayout2"
+            android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent">>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp" app:srcCompat="@drawable/ic_directions_bus_black_24dp"
+                android:id="@+id/vehView" android:layout_weight="1"/>
         <TextView
                 android:text="550"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:textSize="25dp"
+                android:layout_width="50dp"
+                android:gravity="center|left"
+                android:textColor="@color/black"
+                android:textSize="30dp"
                 android:layout_height="match_parent" android:id="@+id/busline" android:layout_weight="1"/>
     </LinearLayout>
-
-
-
 
 
 </android.support.constraint.ConstraintLayout>

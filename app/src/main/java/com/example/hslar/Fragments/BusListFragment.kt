@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +23,8 @@ import com.example.hslpoc.Observer
 import kotlinx.android.synthetic.main.fragment_bus_list.*
 import kotlinx.android.synthetic.main.fragment_bus_list.view.*
 import org.json.JSONObject
+import java.util.*
+import kotlin.concurrent.timerTask
 
 @SuppressLint("ValidFragment")
 class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
@@ -31,18 +34,21 @@ class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
     lateinit var internalStorageService: InternalStorageService
     lateinit var locationService: LocationService
 
-    private var topic = "/hfp/v2/journey/ongoing/+/bus/+/+/${routeModel.gtfsId.substringAfter(":")}/+/+/+/+/+/#"
+    private var topic = "/hfp/v2/journey/ongoing/vp/+/+/+/${routeModel.gtfsId.substringAfter(":")}/+/+/+/+/+/#"
     private var list = mutableListOf<BusSimpleModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("Main", topic)
+
         mqttService = MqttServiceCaller(this.requireContext(), topic)
         mqttService.registerObserverFragment(this)
         internalStorageService = InternalStorageService()
 
         val view = inflater.inflate(R.layout.fragment_bus_list, container, false)
+        unSubsribeWithDelay()
         Thread { mqttService.run() }.start()
 
         adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, list)
@@ -75,34 +81,41 @@ class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
     override fun newMessage(message: JSONObject) {
 
         //TODO: CREATE A PLEASENT LOADING SCREEN WHEN MQTT DATA IS RECEIVED
-
-        for(i in 0 until 300){
-            if (message.has("VP")) {
-                var data = JSONObject(message.getString("VP"))
-                var newBus = BusSimpleModel(
-                    data.getString("veh"),
-                    data.getString("route"),
-                    data.getString("desi"),
-                    data.getString("lat"),
-                    data.getString("long"),
-                    "0"
-                )
-                if (list.size < 1) {
-                    list.add(newBus)
-                }
-                for ((i, item) in list.withIndex()) {
-                    if (item.veh == data.getString(("veh"))) {
-                        list[i] = newBus
-                        return
-                    }
-                }
+        if (message.has("VP")) {
+            var data = JSONObject(message.getString("VP"))
+            var newBus = BusSimpleModel(
+                data.getString("veh"),
+                data.getString("route"),
+                data.getString("desi"),
+                data.getString("lat"),
+                data.getString("long"),
+                "0"
+            )
+            if (list.size < 1) {
                 list.add(newBus)
-        }
+            }
+            for ((i, item) in list.withIndex()) {
+                if (item.veh == data.getString(("veh"))) {
+                    list[i] = newBus
+                    return
+                }
+            }
+            list.add(newBus)
         }
         adapter.notifyDataSetChanged()
+    }
+    fun unsubsribe(){
+        Log.d("Main", "stop")
+        mqttService.unsubscribe(topic)
         //TODO: mqttService disconnect from the client(When trying to disconnect it crashes)
         //mqttService.disconnect()
-        mqttService.unsubscribe(topic)
+    }
+    fun unSubsribeWithDelay(){
+        Thread(Runnable {
+            Timer().schedule(timerTask {
+                unsubsribe()
+            }, 10000)
+        }).start()
     }
     fun sortDescending(){
         var sortedList = list.sortedWith(compareBy({ it.veh}))
@@ -124,6 +137,9 @@ class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
             }
 
             var sortedList = list.sortedWith(compareBy({ it.dist}))
+            for(item in sortedList){
+                Log.d("Main", item.dist)
+            }
             adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, sortedList)
             view!!.bussesList.adapter = adapter
 

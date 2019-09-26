@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,6 +23,8 @@ import com.example.hslar.Fragments.BusRouteFragment
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.LocationService
+import java.util.*
+import kotlin.concurrent.timerTask
 
 
 //TODO: Create strings values for all the texts
@@ -58,19 +61,20 @@ class MainActivity : AppCompatActivity() {
 
         bCheck.setOnClickListener {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                getLocation()
-                getbusId(busline.text.toString())
+               getLocation()
+               getbusId(busline.text.toString())
             } else {
                 //TODO: Create notification service
             }
         }
     }
+
     fun getLocation(){
         locationService.getLocation()
     }
-    fun getbusId(busLine: String) {
+    fun getbusId(line: String) {
         var json = JSONObject()
-        json.put("query", "{routes(name:\"$busLine\"){gtfsId shortName longName mode}}")
+        json.put("query", "{routes(name:\"$line\"){gtfsId shortName longName mode}}")
         val res = httpService.postRequest(json)
         var data = JSONObject(res)
 
