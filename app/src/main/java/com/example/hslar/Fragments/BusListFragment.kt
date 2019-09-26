@@ -130,8 +130,5 @@ class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
         } else {
             Log.d("Main", "no location available")
         }
-
-
-
     }
 }

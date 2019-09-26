@@ -13,4 +13,6 @@
     <string name="stop">pysäkki</string>
     <string name="event">tapahtuma</string>
     <string name="heading">suunta</string>
+    <string name="sort">järjestele</string>
+    <string name="closest">lähin</string>
 </resources>

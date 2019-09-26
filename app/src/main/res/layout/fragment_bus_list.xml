@@ -11,11 +11,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <Button
-                android:text="sort"
+                android:text="@string/sort"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/sortByDescending" android:layout_weight="1"/>
         <Button
-                android:text="closest"
+                android:text="@string/closest"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/sortByClosest" android:layout_weight="1"/>
         </LinearLayout>
