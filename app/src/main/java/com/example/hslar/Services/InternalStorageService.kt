@@ -17,7 +17,7 @@ class InternalStorageService{
         try {
             fileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
             fileOutputStream.write(data.toByteArray())
-            Log.d("Main", "write success to file: $filename")
+            Log.d("Main", "write success to file: $filename data: $data")
         }catch (e: Exception){
             e.printStackTrace()
         }

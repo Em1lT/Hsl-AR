@@ -6,16 +6,24 @@
              android:layout_height="match_parent"
              tools:context=".Fragments.BusListFragment">
 
-    <TextView
-            android:text="@string/bus"
-            android:gravity="center"
-            android:textSize="20dp"
+    <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="0dp" android:id="@+id/textView" android:layout_weight="1"/>
+            android:layout_height="wrap_content">
+        <Button
+                android:text="sort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/sortByDescending" android:layout_weight="1"/>
+        <Button
+                android:text="closest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/sortByClosest" android:layout_weight="1"/>
+        </LinearLayout>
 
     <ListView
             android:layout_width="match_parent"
             android:id="@+id/bussesList"
-            android:layout_height="706dp" android:layout_weight="1"/>
+            android:layout_height="659dp" android:weightSum="1"/>
+
 
 </LinearLayout>

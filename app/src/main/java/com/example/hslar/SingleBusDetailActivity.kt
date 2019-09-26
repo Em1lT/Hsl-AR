@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.example.hslar.Model.BusDetailModel
+import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.InternalStorageService
@@ -31,7 +32,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     lateinit var httpService: HttpService
     lateinit var mapFragment: SupportMapFragment
     lateinit var googleMap: GoogleMap
-    lateinit var bus: BusDetailModel
+    lateinit var bus: BusSimpleModel
     private lateinit var busMarker: Marker
 
     var nullCount = 1
@@ -41,7 +42,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_single_bus_detail)
 
-        bus = intent.extras.getSerializable("bus") as BusDetailModel
+        bus = intent.extras.getSerializable("bus") as BusSimpleModel
 
         httpService = HttpService()
         var busVeh = ""

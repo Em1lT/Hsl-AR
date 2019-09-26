@@ -83,7 +83,6 @@ class MainActivity : AppCompatActivity() {
                 if(routes.length() > 0){
                    startFragment(BusRouteFragment(routes))
                 }
-
             }else{
                 Toast.makeText(this, "no bus route for this number", Toast.LENGTH_SHORT).show()
             }
