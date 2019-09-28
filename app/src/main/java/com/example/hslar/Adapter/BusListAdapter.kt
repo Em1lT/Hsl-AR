@@ -24,11 +24,10 @@ class BusListAdapter (var mCtx: Context, var resource: Int, var items: List<BusS
         var mItems: BusSimpleModel = items[position]
 
         vehNum.text = mItems.veh
-
         if(mItems.dist.toInt() > 1000){
-            distanceFromStop.text = "${(mItems.dist.toInt() / 1000)} km away"
+            distanceFromStop.text = "${(mItems.dist.toDouble() / 1000)} km away"
         } else {
-            distanceFromStop.text = "${mItems.dist.toInt()} meters away"
+            distanceFromStop.text = "${mItems.dist} meters away"
         }
         return view
     }

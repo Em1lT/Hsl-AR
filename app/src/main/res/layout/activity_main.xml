@@ -8,7 +8,7 @@
         android:outlineProvider="bounds"
         android:clipToPadding="false"
         android:padding="3dp"
-        android:background="@drawable/bg"
+        android:background="@drawable/background"
         tools:context=".MainActivity">
 
     <LinearLayout

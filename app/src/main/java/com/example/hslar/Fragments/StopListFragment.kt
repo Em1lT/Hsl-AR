@@ -90,7 +90,6 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
     fun createList(dataStops: JSONArray) {
         for (i in 0 until dataStops.length()) {
             val item = dataStops.getJSONObject(i)
-            Log.d("Main", item.getString("code"))
                 list.add(StopModel(
                     item.getString("gtfsId").substringAfter(":"),
                     item.getString("name"),

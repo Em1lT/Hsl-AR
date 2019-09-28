@@ -44,7 +44,6 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("Main", topic)
 
         mqttService = MqttServiceCaller(this.requireContext(), topic)
         mqttService.registerObserverFragment(this)
@@ -63,10 +62,14 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
             startResponseAnimation(view.sortByDescending)
             sortDescending()
         }
+        view.sortByClosest.isEnabled = false
+        view.bussesList.isEnabled = false
+        view.sortByDescending.isEnabled = false
+
+
         view.sortByClosest.setOnClickListener {
             startResponseAnimation(view.sortByClosest)
-            //calculateDist()
-            //calcDistanceForAll()
+            sortByDistance()
         }
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
@@ -93,7 +96,6 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
     override fun newMessage(message: JSONObject) {
 
         //TODO: CREATE A PLEASENT LOADING SCREEN WHEN MQTT DATA IS RECEIVED
-        //TODO: BLOCK FILTER BEFORE UNSUBSCIBING FROM THE MQTT
         if (message.has("VP")) {
             var data = JSONObject(message.getString("VP"))
             var newBus = BusSimpleModel(
@@ -102,7 +104,7 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
                 data.getString("desi"),
                 data.getString("lat"),
                 data.getString("long"),
-                "1"
+                "0"
             )
             if (list.size < 1) {
                 list.add(newBus)
@@ -127,10 +129,19 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         Thread(Runnable {
             Timer().schedule(timerTask {
                 unsubsribe()
-                //calculateDist()
+
+                calcDistanceForAll()
             }, 5000)
         }).start()
     }
+    fun sortByDistance(){
+
+        var sortedList = list.sortedWith(compareBy { it.dist.toDouble()})
+
+        adapter = BusListAdapter(this.requireContext(), R.layout.line_vehicle_list, list)
+        view!!.bussesList.adapter = adapter
+    }
+
     fun sortDescending(){
         var sortedList = list.sortedWith(compareBy { it.veh})
 
@@ -148,27 +159,14 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
             )
             item.dist = dist.toInt().toString()
         }
+        var sortedList = list.sortedWith(compareBy({ it.dist.toDouble()}))
 
-            var sortedList = list.sortedWith(compareBy({ it.dist}))
-            for(item in sortedList){
-                Log.d("Main", item.dist)
-            }
-            adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, sortedList)
-            view!!.bussesList.adapter = adapter
 
-    }
-    fun calculateDist() {
-
-        for (item in list) {
-            var dist = locationService.calculateDistanceFromTwoPoints(
-                stopModel.lat.toDouble(),
-                stopModel.lon.toDouble(),
-                item.lat.toDouble(),
-                item.longi.toDouble()
-            )
-            item.dist = dist.toInt().toString()
+        activity!!.runOnUiThread {
+            view!!.sortByClosest.isEnabled = true
+            view!!.bussesList.isEnabled = true
+            view!!.sortByDescending.isEnabled = true
+            adapter.notifyDataSetChanged()
         }
-
-        adapter.notifyDataSetChanged()
     }
 }
