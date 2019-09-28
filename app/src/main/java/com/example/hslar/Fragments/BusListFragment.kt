@@ -14,6 +14,7 @@ import com.example.hslar.Adapter.BusListAdapter
 import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.RouteModel
+import com.example.hslar.Model.StopModel
 import com.example.hslar.R
 import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
@@ -27,7 +28,7 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 @SuppressLint("ValidFragment")
-class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
+class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fragment(), Observer {
 
     lateinit var adapter: BusListAdapter
     lateinit var mqttService: MqttServiceCaller
@@ -124,16 +125,15 @@ class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
     }
     fun calcDistanceForAll(){
 
-        var data = internalStorageService.readOnFile(activity!!.applicationContext,"location.txt")
+        //TODO: GET DISTANCE INSIDE THE LOCATION SERVICE CLASS
         locationService = LocationService(activity!!.applicationContext)
 
-        if(data!!.isNotEmpty()){
-            var lat = data!!.substringBefore(":").toDouble()
-            var long = data.substringAfter(":").toDouble()
-
             for (item in adapter.items){
-                var dist = locationService.calculateDistance(lat, long, item.lat.toDouble(), item.longi.toDouble())
-                item.dist = dist.toString()
+                var dist = locationService.calculateDistanceFromTwoPoints(stopModel.lat.toDouble(), stopModel.lon.toDouble(), item.lat.toDouble(), item.longi.toDouble())
+                if(dist != null) {
+                    item.dist = dist.toString()
+                } else {
+                    item.dist = "no distance"
             }
 
             var sortedList = list.sortedWith(compareBy({ it.dist}))
@@ -143,8 +143,6 @@ class BusListFragment(val routeModel: RouteModel) : Fragment(), Observer {
             adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, sortedList)
             view!!.bussesList.adapter = adapter
 
-        } else {
-            Log.d("Main", "no location available")
         }
     }
 }

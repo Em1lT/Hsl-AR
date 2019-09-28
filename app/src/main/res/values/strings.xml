@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">HSL AR</string>
-    <string name="chooseLine">choose busline</string>
-    <string name="busline">busline number</string>
+    <string name="chooseLine">choose line</string>
+    <string name="busline">line number</string>
     <string name="check">check</string>
     <string name="bus">bus</string>
     <string name="speed">speed</string>
@@ -14,4 +14,7 @@
     <string name="heading">heading</string>
     <string name="sort">sort</string>
     <string name="closest">closest</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

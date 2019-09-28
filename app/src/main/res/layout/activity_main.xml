@@ -50,6 +50,7 @@
                     android:inputType="textPersonName"
                     android:gravity="center"
                     android:textColor="@color/black"
+                    app:backgroundTint="@color/orange"
                     android:hint="@string/busline"
                     android:ems="10"
                     android:id="@+id/busline"/>

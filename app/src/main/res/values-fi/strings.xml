@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HSL AR</string>
-    <string name="chooseLine">Valitse bussilinja</string>
-    <string name="busline">bussilinjan numero</string>
-    <string name="check">tarkista</string>
+    <string name="chooseLine">Valitse linja</string>
+    <string name="busline">linjan numero</string>
+    <string name="check">hae</string>
     <string name="bus">bussi</string>
     <string name="speed">nopeus</string>
     <string name="lat">lat</string>

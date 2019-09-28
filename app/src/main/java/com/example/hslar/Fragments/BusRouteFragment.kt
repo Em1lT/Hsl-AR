@@ -48,7 +48,8 @@ class BusRouteFragment(val busRoute: JSONArray) : Fragment() {
         view.buslineList.adapter = adapter
 
         view.buslineList.setOnItemClickListener { adapterView, view, i, l ->
-            (activity as MainActivity).callback(list[i])
+
+            (activity as MainActivity).callbackFromRoute(list[i])
         }
 
         return view

@@ -20,7 +20,9 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.example.hslar.Fragments.BusListFragment
 import com.example.hslar.Fragments.BusRouteFragment
+import com.example.hslar.Fragments.StopListFragment
 import com.example.hslar.Model.RouteModel
+import com.example.hslar.Model.StopModel
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.LocationService
 import java.util.*
@@ -92,10 +94,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    fun callback(routeModel: RouteModel) {
+    fun callbackFromRoute(routeModel: RouteModel) {
+        startFragment(
+            StopListFragment(
+                routeModel
+            )
+        )
+    }
+    fun callbackFromStop(routeModel: RouteModel, stopModel: StopModel){
         startFragment(
             BusListFragment(
-                routeModel
+                routeModel, stopModel
             )
         )
     }

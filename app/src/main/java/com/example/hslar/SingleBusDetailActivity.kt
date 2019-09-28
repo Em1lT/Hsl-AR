@@ -68,7 +68,8 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
                     item.getString("lon"),
                     item.getString("zoneId"),
                     item.getString("code"),
-                    item.getString("desc")
+                    item.getString("desc"),
+                    "0"
                 )
             )
         }

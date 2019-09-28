@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" app:srcCompat="@drawable/ic_indeterminate_check_box_black_24dp"
+                android:id="@+id/imageView" android:layout_weight="3"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:layout_weight="1">
+
+            <TextView
+                    android:text="stopId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/stopId"/>
+            <TextView
+                    android:text="stopDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/stopDesc"/>
+            <TextView
+                    android:text="zoneId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/zoneId"/>
+            <TextView
+                    android:text="dist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/distanceFromMe"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

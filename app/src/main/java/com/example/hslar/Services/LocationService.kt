@@ -46,10 +46,27 @@ class LocationService (val context: Context) {
             internalStorageService.writeOnAFile(context,"location.txt", data)
         }
     }
-    fun calculateDistance(latitude: Double, longitude: Double , latitude1: Double, longitude1: Double): Float {
+    fun calculateDistanceFromTwoPoints(latitude: Double, longitude: Double, latitude1: Double, longitude1: Double): Float {
 
-        var distance = createLocation(latitude, longitude).distanceTo(createLocation(latitude1, longitude1))
-        return distance
+            var distance = createLocation(latitude, longitude).distanceTo(createLocation(latitude1, longitude1))
+            return distance
+    }
+    fun calculateDistance(latitude1: Double, longitude1: Double): Float? {
+
+        var data = internalStorageService.readOnFile(context,"location.txt")
+        var lat = 0.0
+        var long = 0.0
+
+        return if(data!!.isNotEmpty()) {
+            lat = data!!.substringBefore(":").toDouble()
+            long = data.substringAfter(":").toDouble()
+            var distance = createLocation(lat, long).distanceTo(createLocation(latitude1, longitude1))
+            distance
+
+        }else {
+            null
+        }
+
     }
 
     fun createLocation(latitude: Double, longitude: Double): Location{
