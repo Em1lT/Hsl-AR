@@ -9,13 +9,17 @@
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
             android:layout_height="wrap_content">
         <Button
                 android:text="@string/sort"
                 android:layout_width="match_parent"
+                android:background="@drawable/check_button_toggle_left"
                 android:layout_height="wrap_content" android:id="@+id/sortByDescending" android:layout_weight="1"/>
         <Button
                 android:text="@string/closest"
+                android:background="@drawable/check_button_toggle_right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/sortByClosest" android:layout_weight="1"/>
         </LinearLayout>

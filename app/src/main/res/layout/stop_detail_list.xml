@@ -5,11 +5,11 @@
 
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="394dp"
+            android:layout_height="80dp">
         <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" app:srcCompat="@drawable/ic_indeterminate_check_box_black_24dp"
+                android:layout_height="match_parent" app:srcCompat="@drawable/bus_stop"
                 android:id="@+id/imageView" android:layout_weight="3"/>
         <LinearLayout
                 android:orientation="vertical"

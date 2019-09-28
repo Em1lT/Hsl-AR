@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.Toast
 import com.example.hslar.Adapter.BusListAdapter
 import com.example.hslar.Adapter.BusRouteListAdapter
@@ -49,6 +51,7 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
 
         getStops(routeModel.shortName)
         view.sortByClosestStop.setOnClickListener {
+            startResponseAnimation(view.sortByClosestStop)
             sortByClosestStop()
         }
         view.buslineList.setOnItemClickListener { adapterView, view, i, l ->
@@ -87,7 +90,6 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
     fun createList(dataStops: JSONArray) {
         for (i in 0 until dataStops.length()) {
             val item = dataStops.getJSONObject(i)
-            //TODO: CALCULATES THE DISTANCE BETWEEN
             Log.d("Main", item.getString("code"))
                 list.add(StopModel(
                     item.getString("gtfsId").substringAfter(":"),
@@ -104,6 +106,10 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
     }
     fun updateAdapter(){
        adapter.notifyDataSetChanged()
+    }
+    fun  startResponseAnimation(but: Button){
+        but.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.button_response))
+
     }
 
 }

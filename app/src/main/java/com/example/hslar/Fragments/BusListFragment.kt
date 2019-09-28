@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.Button
 import com.example.hslar.Adapter.BusListAdapter
 import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
@@ -47,19 +49,24 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         mqttService = MqttServiceCaller(this.requireContext(), topic)
         mqttService.registerObserverFragment(this)
         internalStorageService = InternalStorageService()
+        locationService = LocationService(activity!!.applicationContext)
+
 
         val view = inflater.inflate(R.layout.fragment_bus_list, container, false)
         unSubsribeWithDelay()
         Thread { mqttService.run() }.start()
 
-        adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, list)
+        adapter = BusListAdapter(this.requireContext(), R.layout.line_vehicle_list, list)
         view.bussesList.adapter = adapter
 
         view.sortByDescending.setOnClickListener {
+            startResponseAnimation(view.sortByDescending)
             sortDescending()
         }
         view.sortByClosest.setOnClickListener {
-            calcDistanceForAll()
+            startResponseAnimation(view.sortByClosest)
+            //calculateDist()
+            //calcDistanceForAll()
         }
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
@@ -71,9 +78,13 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         // Inflate the layout for this fragment
         return view
     }
+    fun  startResponseAnimation(but: Button){
+        but.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.button_response))
 
+    }
     override fun onDestroy() {
         super.onDestroy()
+
     }
 
     override fun onPause() {
@@ -82,6 +93,7 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
     override fun newMessage(message: JSONObject) {
 
         //TODO: CREATE A PLEASENT LOADING SCREEN WHEN MQTT DATA IS RECEIVED
+        //TODO: BLOCK FILTER BEFORE UNSUBSCIBING FROM THE MQTT
         if (message.has("VP")) {
             var data = JSONObject(message.getString("VP"))
             var newBus = BusSimpleModel(
@@ -90,7 +102,7 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
                 data.getString("desi"),
                 data.getString("lat"),
                 data.getString("long"),
-                "0"
+                "1"
             )
             if (list.size < 1) {
                 list.add(newBus)
@@ -104,37 +116,38 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
             list.add(newBus)
         }
         adapter.notifyDataSetChanged()
+
     }
-    fun unsubsribe(){
-        Log.d("Main", "stop")
+    private fun unsubsribe(){
         mqttService.unsubscribe(topic)
         //TODO: mqttService disconnect from the client(When trying to disconnect it crashes)
         //mqttService.disconnect()
     }
-    fun unSubsribeWithDelay(){
+    private fun unSubsribeWithDelay(){
         Thread(Runnable {
             Timer().schedule(timerTask {
                 unsubsribe()
-            }, 10000)
+                //calculateDist()
+            }, 5000)
         }).start()
     }
     fun sortDescending(){
-        var sortedList = list.sortedWith(compareBy({ it.veh}))
-        adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, sortedList)
+        var sortedList = list.sortedWith(compareBy { it.veh})
+
+        adapter = BusListAdapter(this.requireContext(), R.layout.line_vehicle_list, sortedList)
         view!!.bussesList.adapter = adapter
     }
+
     fun calcDistanceForAll(){
-
-        //TODO: GET DISTANCE INSIDE THE LOCATION SERVICE CLASS
-        locationService = LocationService(activity!!.applicationContext)
-
-            for (item in adapter.items){
-                var dist = locationService.calculateDistanceFromTwoPoints(stopModel.lat.toDouble(), stopModel.lon.toDouble(), item.lat.toDouble(), item.longi.toDouble())
-                if(dist != null) {
-                    item.dist = dist.toString()
-                } else {
-                    item.dist = "no distance"
-            }
+        for (item in list) {
+            var dist = locationService.calculateDistanceFromTwoPoints(
+                stopModel.lat.toDouble(),
+                stopModel.lon.toDouble(),
+                item.lat.toDouble(),
+                item.longi.toDouble()
+            )
+            item.dist = dist.toInt().toString()
+        }
 
             var sortedList = list.sortedWith(compareBy({ it.dist}))
             for(item in sortedList){
@@ -143,6 +156,19 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
             adapter = BusListAdapter(this.requireContext(), R.layout.busline_list, sortedList)
             view!!.bussesList.adapter = adapter
 
+    }
+    fun calculateDist() {
+
+        for (item in list) {
+            var dist = locationService.calculateDistanceFromTwoPoints(
+                stopModel.lat.toDouble(),
+                stopModel.lon.toDouble(),
+                item.lat.toDouble(),
+                item.longi.toDouble()
+            )
+            item.dist = dist.toInt().toString()
         }
+
+        adapter.notifyDataSetChanged()
     }
 }

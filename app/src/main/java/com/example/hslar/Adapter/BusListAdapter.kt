@@ -18,12 +18,18 @@ class BusListAdapter (var mCtx: Context, var resource: Int, var items: List<BusS
         val layoutInflater: LayoutInflater = LayoutInflater.from(mCtx)
         val view:View = layoutInflater.inflate(resource, null)
 
-        val mBusLineNum: TextView = view.findViewById(R.id.busline)
+        val vehNum: TextView = view.findViewById(R.id.vehNum)
+        val distanceFromStop: TextView = view.findViewById(R.id.distanceFromStop)
 
         var mItems: BusSimpleModel = items[position]
 
-        mBusLineNum.text = mItems.veh
+        vehNum.text = mItems.veh
 
+        if(mItems.dist.toInt() > 1000){
+            distanceFromStop.text = "${(mItems.dist.toInt() / 1000)} km away"
+        } else {
+            distanceFromStop.text = "${mItems.dist.toInt()} meters away"
+        }
         return view
     }
 }
