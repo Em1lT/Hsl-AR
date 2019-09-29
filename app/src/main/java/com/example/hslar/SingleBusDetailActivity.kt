@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.AnimationUtils
+import android.widget.Button
 import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.InternalStorageService
+import com.example.hslar.Services.LocationService
 import com.example.hslar.Services.MqttServiceCaller
 import com.example.hslpoc.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -27,24 +30,37 @@ import kotlin.math.roundToInt
 
 class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallback {
 
-    var topic: String = ""
     private lateinit var mqttService: MqttServiceCaller
-    lateinit var httpService: HttpService
-    lateinit var mapFragment: SupportMapFragment
-    lateinit var googleMap: GoogleMap
-    lateinit var bus: BusSimpleModel
+    private lateinit var locationService: LocationService
+    private lateinit var internalStorageService: InternalStorageService
+
+    private lateinit var httpService: HttpService
+    private lateinit var mapFragment: SupportMapFragment
+    private lateinit var googleMap: GoogleMap
+
+    private var topic: String = ""
+    private lateinit var myLocation: LatLng
+    private lateinit var busLocation: LatLng
+    private lateinit var bus: BusSimpleModel
+    private lateinit var choosedStop: StopModel
     private lateinit var busMarker: Marker
+    private lateinit var yourLocation: Marker
+    private val list = mutableListOf<StopModel>()
+
 
     var nullCount = 1
-    val list = mutableListOf<StopModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_single_bus_detail)
 
         bus = intent.extras.getSerializable("bus") as BusSimpleModel
+        choosedStop = intent.extras.getSerializable("stop") as StopModel
 
         httpService = HttpService()
+        locationService = LocationService(this)
+        internalStorageService = InternalStorageService()
+        getYourLocation()
         var busVeh = ""
         for(i in 0 until (5 - bus.veh.length)){
             busVeh += "0"
@@ -52,7 +68,6 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         busVeh += bus.veh
 
         topic = "/hfp/v2/journey/ongoing/+/+/+/$busVeh/${bus.route}/+/+/+/+/+/#"
-        Log.d("Main", topic)
         //busNum.text = bus.desi
         mqttService = MqttServiceCaller(this, topic)
         mqttService.registerObserverActivity(this)
@@ -79,6 +94,19 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         mapFragment.getMapAsync(this)
 
 
+        bYou.setOnClickListener {
+            startResponseAnimation(bYou)
+            moveCameraToLocation(myLocation)
+        }
+        bStop.setOnClickListener {
+            startResponseAnimation(bStop)
+            val latLng = LatLng(choosedStop.lat.toDouble(), choosedStop.lon.toDouble())
+            moveCameraToLocation(latLng)
+        }
+        bBus.setOnClickListener {
+            startResponseAnimation(bBus)
+            moveCameraToLocation(busLocation)
+        }
         bAr.setOnClickListener {
             //TODO: AR ELEMENT, could be made with Unity and combine to activity??
         }
@@ -87,25 +115,43 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
 
-
+        //TODO: Create buttons to teleport to your location, selected stop or the bus
         //TODO: Create custom googleMaps markers for the bus & the stop
         //TODO: Decide to use google maps or open streetmap???
-        //TODO: Check your own location
         //TODO: route that goes through of the bus stops(check google maps docs)
 
         for(item in list){
-            val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
-            googleMap.addMarker(MarkerOptions().position(latLng).title(item.name)
-                .snippet("Zone: ${item.zoneId} desc: ${item.desc}")
-                .icon(
-                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
 
+            val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
+
+//            Log.d("Main", "${item.lat} == ${choosedStop.lat}")
+            if(item.lat == choosedStop.lat && item.lon == choosedStop.lon){
+                googleMap.addMarker(MarkerOptions().position(latLng).title(item.name)
+                    .snippet("Zone: ${item.zoneId} desc: ${item.desc}")
+                    .icon(
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+
+            } else {
+                googleMap.addMarker(MarkerOptions().position(latLng).title(item.name)
+                    .snippet("Zone: ${item.zoneId} desc: ${item.desc}")
+                    .icon(
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
+            }
         }
         val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
+
+        yourLocation= googleMap.addMarker(MarkerOptions()
+            .position(myLocation)
+            .title("your position")
+            .icon(
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+        )
+
         busMarker = googleMap.addMarker(MarkerOptions()
             .position(latLng)
             .title(bus.veh)
         )
+
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f))
     }
     fun createPostJsonArr(route: String): JSONArray{
@@ -125,6 +171,17 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
         googleMap.let {
             busMarker.position =  latLng
+        }
+    }
+    private fun getYourLocation(){
+        var data = internalStorageService.readOnFile(this,"location.txt")
+        var lat: Double
+        var long: Double
+        if(data!!.isNotEmpty()) {
+            lat = data!!.substringBefore(":").toDouble()
+            long = data.substringAfter(":").toDouble()
+            myLocation = LatLng(lat, long)
+
         }
     }
 
@@ -172,6 +229,9 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
 
 
         }
+    }
+    private fun moveCameraToLocation(latLng: LatLng){
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f))
     }
 
     private fun BusOnStop(message: JSONObject) {
@@ -224,6 +284,8 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     fun updateOverley(newBus: BusDetailModel){
 
         updateMarkers(newBus)
+        busLocation = LatLng(newBus.lat.toDouble(), newBus.longi.toDouble())
+
         checkStation(newBus.stop)
         //TODO: binding
 
@@ -271,5 +333,8 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     override fun onPause() {
         super.onPause()
         mqttService.unsubscribe(topic)
+    }
+    fun startResponseAnimation(button: Button){
+        button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
 }

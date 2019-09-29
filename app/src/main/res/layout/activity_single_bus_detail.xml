@@ -155,7 +155,7 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" android:id="@+id/linearLayout4">
 
         <fragment
                 android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -165,6 +165,31 @@
 
         </fragment>
 
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="377dp"
+            android:layout_height="54dp"
+
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginTop="20dp" app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp">
+        <Button
+                android:text="You"
+                android:background="@drawable/check_button_toggle_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/bYou" android:layout_weight="1"/>
+        <Button
+                android:text="stop"
+                android:background="@drawable/check_button_toggle_middle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/bStop" android:layout_weight="1"/>
+        <Button
+                android:text="bus"
+                android:background="@drawable/check_button_toggle_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/bBus" android:layout_weight="1"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

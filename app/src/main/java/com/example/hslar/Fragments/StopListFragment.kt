@@ -37,6 +37,7 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
 
     var list = mutableListOf<StopModel>()
 
+    //TODO: CREATE SOME SCREEN TO VIEW MAPS FROM... CONTEXT MENU?, FRAGMENT? OPTIONAL!!!!!!!!!!!!!!!!!!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

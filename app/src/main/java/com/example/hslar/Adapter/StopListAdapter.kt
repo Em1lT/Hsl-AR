@@ -11,6 +11,8 @@ import com.example.hslar.Model.StopModel
 import com.example.hslar.R
 import com.example.hslar.Services.LocationService
 import kotlin.math.round
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class StopListAdapter(var mCtx: Context, var resource: Int, var items: List<StopModel>)
     : ArrayAdapter<StopModel>(mCtx, resource, items){
@@ -31,8 +33,11 @@ class StopListAdapter(var mCtx: Context, var resource: Int, var items: List<Stop
         stopId.text = mItems.code
         desc.text = mItems.name
         zoneId.text = mItems.zoneId
-        dist.text = mItems.dist + " meters to stop"
-
+        if(mItems.dist.toDouble() > 1000){
+            dist.text = "${"%.2f".format(mItems.dist.toDouble() / 1000)} km to nearest stop"
+        } else {
+            dist.text = "${(mItems.dist.toDouble()).roundToInt()} meters to nearest stop"
+        }
         return view
     }
 

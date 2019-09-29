@@ -74,6 +74,7 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
                 putExtra("bus", adapter.getItem(i))
+                putExtra("stop", stopModel)
             }
             mqttService.deRegisterObserverFragment(this)
             startActivity(intent)

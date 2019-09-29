@@ -4,6 +4,7 @@ package com.example.hslar.Fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +48,11 @@ class BusRouteFragment(val busRoute: JSONArray) : Fragment() {
             BusRouteListAdapter(this.requireContext(), R.layout.busline_list, list)
         view.buslineList.adapter = adapter
 
+
+        view.buslineList.setOnItemLongClickListener { adapterView, view, i, l ->
+            Log.d("Main", "LongCLick")
+            true
+        }
         view.buslineList.setOnItemClickListener { adapterView, view, i, l ->
 
             (activity as MainActivity).callbackFromRoute(list[i])
