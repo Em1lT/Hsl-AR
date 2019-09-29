@@ -73,7 +73,7 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         }
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
-                putExtra("bus", list[i])
+                putExtra("bus", adapter.getItem(i))
             }
             mqttService.deRegisterObserverFragment(this)
             startActivity(intent)
@@ -137,9 +137,9 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
     fun sortByDistance(){
 
         var sortedList = list.sortedWith(compareBy { it.dist.toDouble()})
-
-        adapter = BusListAdapter(this.requireContext(), R.layout.line_vehicle_list, list)
+        adapter = BusListAdapter(this.requireContext(), R.layout.line_vehicle_list, sortedList)
         view!!.bussesList.adapter = adapter
+
     }
 
     fun sortDescending(){
@@ -151,13 +151,17 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
 
     fun calcDistanceForAll(){
         for (item in list) {
-            var dist = locationService.calculateDistanceFromTwoPoints(
-                stopModel.lat.toDouble(),
-                stopModel.lon.toDouble(),
-                item.lat.toDouble(),
-                item.longi.toDouble()
-            )
-            item.dist = dist.toInt().toString()
+
+            if(item.lat.toDouble() != null){
+                var dist = locationService.calculateDistanceFromTwoPoints(
+                    stopModel.lat.toDouble(),
+                    stopModel.lon.toDouble(),
+                    item.lat.toDouble(),
+                    item.longi.toDouble()
+                )
+                item.dist = dist.toInt().toString()
+            }
+
         }
         var sortedList = list.sortedWith(compareBy({ it.dist.toDouble()}))
 
