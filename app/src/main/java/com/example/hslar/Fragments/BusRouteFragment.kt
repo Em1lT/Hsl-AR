@@ -48,11 +48,6 @@ class BusRouteFragment(val busRoute: JSONArray) : Fragment() {
             BusRouteListAdapter(this.requireContext(), R.layout.busline_list, list)
         view.buslineList.adapter = adapter
 
-
-        view.buslineList.setOnItemLongClickListener { adapterView, view, i, l ->
-            Log.d("Main", "LongCLick")
-            true
-        }
         view.buslineList.setOnItemClickListener { adapterView, view, i, l ->
 
             (activity as MainActivity).callbackFromRoute(list[i])

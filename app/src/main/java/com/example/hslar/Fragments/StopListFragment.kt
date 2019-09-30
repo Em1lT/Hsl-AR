@@ -17,6 +17,7 @@ import com.example.hslar.Adapter.StopListAdapter
 import com.example.hslar.MainActivity
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
+import com.example.hslar.PopUp.Dialog_popup
 
 import com.example.hslar.R
 import com.example.hslar.Services.HttpService
@@ -37,7 +38,6 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
 
     var list = mutableListOf<StopModel>()
 
-    //TODO: CREATE SOME SCREEN TO VIEW MAPS FROM... CONTEXT MENU?, FRAGMENT? OPTIONAL!!!!!!!!!!!!!!!!!!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,6 +54,22 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
         view.sortByClosestStop.setOnClickListener {
             startResponseAnimation(view.sortByClosestStop)
             sortByClosestStop()
+        }
+
+        /*
+        *
+        * */
+
+        view.buslineList.setOnItemLongClickListener { _, view, i, l ->
+
+            var loc = locationService.getYourLocation()
+            var loc1 = locationService.createLocation(adapter.getItem(i).lat.toDouble(), adapter.getItem(i).lon.toDouble())
+            if(loc != null){
+                val dial = Dialog_popup(loc, loc1)
+                dial.show(fragmentManager,"Dialog_popup")
+            }
+
+            true
         }
         view.buslineList.setOnItemClickListener { adapterView, view, i, l ->
 

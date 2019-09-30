@@ -68,6 +68,21 @@ class LocationService (val context: Context) {
         }
 
     }
+    fun getYourLocation(): Location? {
+        var data = internalStorageService.readOnFile(context,"location.txt")
+        var lat: Double
+        var long: Double
+
+        return if(data!!.isNotEmpty()) {
+            lat = data!!.substringBefore(":").toDouble()
+            long = data.substringAfter(":").toDouble()
+            var distance = createLocation(lat, long)
+            distance
+
+        }else {
+            null
+        }
+    }
 
     fun createLocation(latitude: Double, longitude: Double): Location{
         var loc = Location("")

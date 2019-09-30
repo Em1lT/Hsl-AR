@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ProgressBar
 import com.example.hslar.Adapter.BusListAdapter
 import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
@@ -65,9 +66,12 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
         view.sortByClosest.isEnabled = false
         view.bussesList.isEnabled = false
         view.sortByDescending.isEnabled = false
+        if(progressBar1 != null) {
+            progressBar1.visibility = View.VISIBLE
+        }
 
 
-        view.sortByClosest.setOnClickListener {
+            view.sortByClosest.setOnClickListener {
             startResponseAnimation(view.sortByClosest)
             sortByDistance()
         }
@@ -168,6 +172,7 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
 
 
         activity!!.runOnUiThread {
+            progressBar1.visibility = View.INVISIBLE
             view!!.sortByClosest.isEnabled = true
             view!!.bussesList.isEnabled = true
             view!!.sortByDescending.isEnabled = true
