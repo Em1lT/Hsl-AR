@@ -38,9 +38,11 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
     lateinit var internalStorageService: InternalStorageService
     lateinit var locationService: LocationService
 
-    private var topic = "/hfp/v2/journey/ongoing/vp/+/+/+/${routeModel.gtfsId.substringAfter(":")}/+/+/+/+/+/#"
+    private var topic = "/hfp/v2/journey/ongoing/vp/+/+/+/${routeModel.gtfsId.substringAfter(":")}/1/+/+/+/+/#"
+    private var topic1 = "/hfp/v2/journey/ongoing/vp/+/+/+/${routeModel.gtfsId.substringAfter(":")}/2/+/+/+/+/#"
     private var list = mutableListOf<BusSimpleModel>()
 
+    //TODO: create a list for both directions & display the line somehow
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -136,7 +138,16 @@ class BusListFragment(val routeModel: RouteModel, val stopModel: StopModel) : Fr
                 unsubsribe()
 
                 calcDistanceForAll()
-            }, 5000)
+            }, 2500)
+        }).start()
+    }
+    private fun reSubsribeWithDelay(){
+        Thread(Runnable {
+            Timer().schedule(timerTask {
+                unsubsribe()
+
+                calcDistanceForAll()
+            }, 2500)
         }).start()
     }
     fun sortByDistance(){

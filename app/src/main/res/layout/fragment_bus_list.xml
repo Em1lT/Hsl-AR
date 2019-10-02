@@ -36,10 +36,22 @@
                 android:layout_height="wrap_content" android:id="@+id/sortByClosest" android:layout_weight="1"/>
         </LinearLayout>
 
-    <ListView
+
+    <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:id="@+id/bussesList"
-            android:layout_height="659dp" android:weightSum="1"/>
+            android:layout_height="match_parent">
+
+
+        <ListView
+                android:layout_width="match_parent"
+                android:id="@+id/bussesList"
+                android:layout_height="match_parent" android:layout_weight="1"/>
+        <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+    </LinearLayout>
 
 
 </LinearLayout>
