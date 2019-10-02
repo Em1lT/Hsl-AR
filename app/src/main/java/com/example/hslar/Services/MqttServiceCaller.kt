@@ -130,6 +130,7 @@ class MqttServiceCaller(val context: Context,val topic: String): Runnable {
             unsubToken.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // The subscription could successfully be removed from the client
+                    Log.d("Main", "unsubscribe success")
                     val toast = Toast.makeText(context, "unsubscribe success", Toast.LENGTH_SHORT)
                     toast.show()
                 }
