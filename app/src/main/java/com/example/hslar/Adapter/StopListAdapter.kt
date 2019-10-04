@@ -6,13 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.R
-import com.example.hslar.Services.LocationService
-import kotlin.math.round
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 
 class StopListAdapter(var mCtx: Context, var resource: Int, var items: List<StopModel>)
     : ArrayAdapter<StopModel>(mCtx, resource, items){

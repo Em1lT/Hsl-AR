@@ -1,11 +1,14 @@
 package com.example.hslar
 
 import android.annotation.SuppressLint
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ImageButton
 import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.StopModel
@@ -14,21 +17,29 @@ import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
 import com.example.hslar.Services.MqttServiceCaller
 import com.example.hslpoc.Observer
-import kotlinx.android.synthetic.main.activity_single_bus_detail.*
-import org.json.JSONObject
-import kotlin.math.roundToInt
-
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdate
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.mapboxsdk.utils.BitmapUtils
+import kotlinx.android.synthetic.main.activity_single_bus_detail.*
 import org.json.JSONArray
+import org.json.JSONObject
+import kotlin.math.roundToInt
 
 class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallback {
 
@@ -45,17 +56,18 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     private lateinit var busLocation: LatLng
     private lateinit var bus: BusSimpleModel
     private lateinit var choosedStop: StopModel
-    private lateinit var busMarker: Marker
-    private lateinit var yourLocation: Marker
+    private lateinit var busSymbol: Symbol
     private val list = mutableListOf<StopModel>()
 
 
     var nullCount = 1
 
+    //TODO: DISTANCE, MORE INFO FROM STATINONS & AR & NOTIFICATION?
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_single_bus_detail)
         Mapbox.getInstance(this, getString(R.string.access_token))
+
+        setContentView(R.layout.activity_single_bus_detail)
 
         bus = intent.extras.getSerializable("bus") as BusSimpleModel
         choosedStop = intent.extras.getSerializable("stop") as StopModel
@@ -96,6 +108,14 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         mapBox.onCreate(savedInstanceState)
         mapBox.getMapAsync(this)
 
+        showNavi.setOnClickListener {
+            if(navigationMenu.visibility == View.INVISIBLE){
+                navigationMenu.visibility = View.VISIBLE
+            } else {
+                navigationMenu.visibility = View.INVISIBLE
+            }
+        }
+
         bYou.setOnClickListener {
             startResponseAnimation(bYou)
             moveCameraToLocation(myLocation)
@@ -114,32 +134,86 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         }
     }
 
-    override fun onMapReady(map: MapboxMap) {
-      mapBoxMap = map
+    override fun onMapReady(mapboxMap: MapboxMap) {
+      mapBoxMap = mapboxMap
 
-        for(item in list){
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) {style ->
 
-            val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
+            val geoJson = GeoJsonOptions().withTolerance(0.4f)
+            val symbolManager = SymbolManager(mapBox, mapboxMap, style, null, geoJson)
 
-            if(item.lat == choosedStop.lat && item.lon == choosedStop.lon){
-                mapBoxMap .addMarker(MarkerOptions().position(latLng).title(item.name)
-                    .snippet("Zone: ${item.zoneId}\ndesc: ${item.desc}\n${item.dist}"))
 
-            } else {
-                mapBoxMap .addMarker(MarkerOptions().position(latLng).title(item.name)
-                    .snippet("Zone: ${item.zoneId} desc: ${item.desc}"))
+            style.addImage(
+                "HOME_STATION",
+                BitmapUtils.getBitmapFromDrawable(
+                    ContextCompat.getDrawable(this, R.drawable.ic_store_black_24dp))!!, true)
+
+            style.addImage(
+                "OTHER_STATION",
+                BitmapUtils.getBitmapFromDrawable(
+                    ContextCompat.getDrawable(this, R.drawable.ic_store_black2_24dp))!!, true)
+
+
+            for(item in list){
+
+                val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
+
+                if(item.lat == choosedStop.lat && item.lon == choosedStop.lon) {
+
+                    var symbol6 = SymbolOptions()
+                        .withLatLng(latLng)
+                        .withIconImage("HOME_STATION")
+                        .withIconSize(1.3f)
+                        .withDraggable(false)
+
+
+                    symbolManager.create(symbol6)
+
+                } else {
+
+                    var symbol1 = SymbolOptions()
+                        .withLatLng(latLng)
+                        .withIconImage("OTHER_STATION")
+                        .withIconSize(1.3f)
+                        .withDraggable(false)
+
+                    symbolManager.create(symbol1)
+
+                }
             }
+            style.addImage(
+                "YOU",
+                BitmapUtils.getBitmapFromDrawable(
+                    ContextCompat.getDrawable(this, R.drawable.ic_person_black_24dp))!!, true)
+
+            style.addImage(
+                "BUS_MARKER",
+                BitmapUtils.getBitmapFromDrawable(
+                    ContextCompat.getDrawable(this, R.drawable.ic_directions_bus_black_24dp))!!, true)
+
+            style.addSource(GeoJsonSource("source-id"))
+            style.addLayer(SymbolLayer("bus","source-id").withProperties(
+                iconImage("BUS_MARKER"),
+                iconIgnorePlacement(true),
+                iconAllowOverlap(true),
+                iconSize(0.7f)
+            ))
+
+            val latLng1 = LatLng(myLocation.latitude, myLocation.longitude)
+
+            var symbol2 = SymbolOptions()
+                .withLatLng(latLng1)
+                .withIconImage("YOU")
+                .withIconSize(1.3f)
+                .withDraggable(false)
+
+            symbolManager.create(symbol2)
         }
-         val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
+        val position = CameraPosition.Builder()
+            .target(LatLng(bus.lat.toDouble(), bus.longi.toDouble())).zoom(15.0).build()
 
+        mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
 
-        yourLocation= mapBoxMap .addMarker(MarkerOptions()
-            .position(myLocation)
-            .title("you"))
-
-        busMarker = mapBoxMap.addMarker(MarkerOptions()
-            .position(latLng)
-            .title(bus.veh))
 
     }
     fun createPostJsonArr(route: String): JSONArray {
@@ -157,7 +231,14 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
 
     fun updateMarkers(bus: BusDetailModel) {
         val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
-        busMarker.position = latLng
+        if (mapBoxMap.style != null) {
+            var busSource = mapBoxMap.style!!.getSource("source-id") as GeoJsonSource
+            busSource.setGeoJson(
+                FeatureCollection.fromFeature(
+                    Feature.fromGeometry(Point.fromLngLat(bus.longi.toDouble(), bus.lat.toDouble()))
+                )
+            )
+        }
     }
     private fun getYourLocation(){
         var data = internalStorageService.readOnFile(this,"location.txt")
@@ -173,7 +254,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
 
     override fun newMessage(message: JSONObject) {
 
-        //TODO: Create something for every event_type. Check https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions-2/
+        Log.d("Main", message.toString())
         if (message.has("VP")) {
             vehiclePosition(message)
         }
@@ -220,7 +301,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         var position = CameraPosition.Builder()
             .target(LatLng(latLng.latitude, latLng.longitude)).zoom(15.0).build()
 
-        mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position))
+        mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 3500)
     }
 
     private fun BusOnStop(message: JSONObject) {
@@ -272,6 +353,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
     @SuppressLint("SetTextI18n")
     fun updateOverley(newBus: BusDetailModel){
 
+        Log.d("Main", "here")
         updateMarkers(newBus)
         busLocation = LatLng(newBus.lat.toDouble(), newBus.longi.toDouble())
 
@@ -342,7 +424,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnMapReadyCallbac
         mapBox.onPause()
         mqttService.unsubscribe(topic)
     }
-    fun startResponseAnimation(button: Button){
+    fun startResponseAnimation(button: ImageButton){
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
 }

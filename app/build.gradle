@@ -42,10 +42,15 @@ dependencies {
     implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
         exclude module: 'support-v4'
     }
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.0.1'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.5.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.13.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.13.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.5.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.8.2'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.42.0'
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.42.0'){
+        transitive = true
+    }
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v8:0.7.0'
+
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

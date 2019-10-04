@@ -2,9 +2,7 @@ package com.example.hslar.Fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,17 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
-import android.widget.ProgressBar
 import com.example.hslar.Adapter.BusListAdapter
-import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.R
 import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
-import com.example.hslar.SingleBusDetailActivity
 import com.example.hslar.Services.MqttServiceCaller
+import com.example.hslar.SingleBusDetailActivity
 import com.example.hslpoc.Observer
 import kotlinx.android.synthetic.main.fragment_bus_list.*
 import kotlinx.android.synthetic.main.fragment_bus_list.view.*
@@ -133,7 +129,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                 "0"
             )
 
-            Log.d("Main", dir)
             if(dir == "1"){
             if (listDirection.size < 1) {
                 listDirection.add(newBus)
@@ -145,7 +140,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                     return
                 }
             }
-                Log.d("Main", "add to listDirection")
                 listDirection.add(newBus)
         } else {
                 if (listOtherDirection.size < 1) {
@@ -158,7 +152,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                         return
                     }
                 }
-                Log.d("Main", "add to listOtherDirection")
                 listOtherDirection.add(newBus)
             }
         }
@@ -209,7 +202,8 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
 
         for (item in listDirection) {
 
-            if(item.lat != null){
+            Log.d("Main", "${item.lat}::::::::::::: ${item.longi}")
+            if(item.lat != "null" && item.longi != "null"){
                 var dist = locationService.calculateDistanceFromTwoPoints(
                     stopModel.lat.toDouble(),
                     stopModel.lon.toDouble(),
@@ -217,12 +211,14 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                     item.longi.toDouble()
                 )
                 item.dist = dist.toInt().toString()
+            } else {
+                item.dist = "0"
             }
-
         }
         for (item in listOtherDirection) {
 
-            if(item.lat != null) {
+            Log.d("Main", "${item.lat}::::::::::::: ${item.longi}")
+            if(item.lat != "null" && item.longi != "null"){
                 var dist = locationService.calculateDistanceFromTwoPoints(
                     stopModel.lat.toDouble(),
                     stopModel.lon.toDouble(),
@@ -230,6 +226,8 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                     item.longi.toDouble()
                 )
                 item.dist = dist.toInt().toString()
+            } else {
+                item.dist = "0"
             }
         }
 

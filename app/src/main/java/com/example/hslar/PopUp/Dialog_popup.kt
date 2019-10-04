@@ -1,85 +1,108 @@
 package com.example.hslar.PopUp
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.util.DisplayMetrics
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.hslar.R
-import com.google.android.gms.maps.GoogleMap
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdate
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.maps.MapFragment
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.geometry.LatLng
-
-import com.mapbox.mapboxsdk.maps.SupportMapFragment
-import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
+import com.mapbox.mapboxsdk.utils.BitmapUtils
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute
-import kotlinx.android.synthetic.main.activity_single_bus_detail.*
 import kotlinx.android.synthetic.main.pop_up.*
 import kotlinx.android.synthetic.main.pop_up.view.*
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.Callback
+import retrofit2.Response
 
 @SuppressLint("ValidFragment")
-class Dialog_popup(val location: Location, val location1: Location) : DialogFragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+class Dialog_popup(val location: Location, val location1: Location) : DialogFragment(), OnMapReadyCallback {
 
     var cameraOnYou = true
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         map = mapboxMap
 
-        val from = Point.fromLngLat(location.longitude, location.latitude)
-        val to = Point.fromLngLat(location1.longitude, location1.latitude)
+        mapboxMap.setStyle(Style.MAPBOX_STREETS){
 
-        val latLng = LatLng(location.latitude, location.longitude)
-        val latLng1 = LatLng(location1.latitude, location1.longitude)
+            val from = Point.fromLngLat(location.longitude, location.latitude)
+            val to = Point.fromLngLat(location1.longitude, location1.latitude)
 
-        map.addMarker(MarkerOptions().position(latLng))
-        map.addMarker(MarkerOptions().position(latLng1))
-        var position = CameraPosition.Builder()
-        .target(LatLng(location.latitude, location.longitude)).zoom(15.0).build()
+            val latLng = LatLng(location.latitude, location.longitude)
+            val latLng1 = LatLng(location1.latitude, location1.longitude)
 
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
-        getRoute(from, to)
+            val geoJson = GeoJsonOptions().withTolerance(0.4f)
+            val symbolManager = SymbolManager(mapView1, mapboxMap, it, null, geoJson)
+
+            it.addImage("ID_YOU",
+                BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(activity!!.applicationContext, R.drawable.ic_person_black_24dp))!!,
+                true)
+
+            it.addImage("ID_BUS",
+                BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(activity!!.applicationContext, R.drawable.ic_store_black_24dp))!!,
+                true)
+
+            val symbol = SymbolOptions()
+                .withLatLng(latLng)
+                .withIconImage("ID_YOU")
+                .withIconSize(2.0f)
+                .withDraggable(false)
+                .withTextField(getString(R.string.you))
+
+            symbolManager.create(symbol)
+
+
+            val symbol1 = SymbolOptions()
+                .withLatLng(latLng1)
+                .withIconImage("ID_BUS")
+                .withIconSize(2.0f)
+                .withDraggable(false)
+                .withTextField(getString(R.string.stop))
+            symbolManager.create(symbol1)
+
+            val position = CameraPosition.Builder()
+                .target(LatLng(location.latitude, location.longitude)).zoom(15.0).build()
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
+
+            getRoute(from, to)
+        }
+
     }
-    override fun onMapClick(point: LatLng) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     var navigationMapRoute: NavigationMapRoute? = null
     lateinit var map: MapboxMap
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         dialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val view = inflater.inflate(R.layout.pop_up, container, false)
-        return view
+        Mapbox.getInstance(activity!!.applicationContext, getString(R.string.access_token))
+
+        return inflater.inflate(R.layout.pop_up, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Mapbox.getInstance(activity!!.applicationContext, getString(R.string.access_token))
-
 
         view.you.setOnClickListener {
 
@@ -101,8 +124,8 @@ class Dialog_popup(val location: Location, val location1: Location) : DialogFrag
     fun getRoute(origin: Point, dest: Point){
         Thread(Runnable{
 
-        NavigationRoute.builder()
-            .accessToken(Mapbox.getAccessToken())
+        NavigationRoute.builder(activity!!.applicationContext)
+            .accessToken(Mapbox.getAccessToken()!!)
             .origin(origin)
             .destination(dest)
             .profile(DirectionsCriteria.PROFILE_WALKING)

@@ -22,9 +22,7 @@
     <string name="retutn_title">Return a bike</string>
 
     <!-- Api Keys -->
-    <string name="access_token" translatable="false">
-       
-    </string>
+    <string name="access_token" translatable="false"></string>
     <string name="citybikes">CityBikes</string>
 
 </resources>

@@ -1,30 +1,16 @@
 package com.example.hslar
 
 import android.Manifest
-import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.location.LocationManager
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.support.v4.app.ActivityCompat
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONArray
-import org.json.JSONObject
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.util.Log
-import android.view.animation.Animation
+import android.support.v7.app.AppCompatActivity
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.Toast
 import com.example.hslar.Fragments.BusListFragment
 import com.example.hslar.Fragments.BusRouteFragment
 import com.example.hslar.Fragments.StopListFragment
@@ -32,8 +18,9 @@ import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.LocationService
-import java.util.*
-import kotlin.concurrent.timerTask
+import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 //TODO: Create strings values for all the texts
