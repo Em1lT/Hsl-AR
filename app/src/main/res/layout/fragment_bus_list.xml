@@ -35,13 +35,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/sortByClosest" android:layout_weight="1"/>
         </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
 
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:gravity="center"
+                  android:textColor="@color/black"
+                  android:id="@+id/endingLine"
+                  android:text=""
+                  android:layout_weight="1"/>
+
+
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:textColor="@color/black"
+                  android:id="@+id/endingLineSecond"
+                  android:gravity="center"
+                  android:text="Toi" android:layout_weight="1"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@drawable/line">
+
+    </LinearLayout>
 
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            android:divider="@color/orange"
+            android:showDividers="middle">
 
         <ListView
                 android:layout_width="match_parent"

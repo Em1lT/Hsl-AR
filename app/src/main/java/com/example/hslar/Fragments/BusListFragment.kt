@@ -54,8 +54,11 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
         internalStorageService = InternalStorageService()
         locationService = LocationService(activity!!.applicationContext)
 
+        val firstEndingStop = routeModel.longName.substringBefore("-")
+        val secondEndingStop = routeModel.longName.substringAfterLast("-")
 
         val view = inflater.inflate(R.layout.fragment_bus_list, container, false)
+
         unSubsribeWithDelay()
         Thread { mqttService.run() }.start()
 
@@ -64,6 +67,9 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
 
         adapter1 = BusListAdapter(this.requireContext(), R.layout.line_vehicle_list, listOtherDirection)
         view.bussesListOther.adapter = adapter1
+
+        view.endingLine.text = secondEndingStop
+        view.endingLineSecond.text = firstEndingStop
 
         view.sortByDescending.setOnClickListener {
             startResponseAnimation(view.sortByDescending)
@@ -115,8 +121,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
     }
     override fun newMessage(message: JSONObject) {
 
-        //TODO: CREATE A PLEASENT LOADING SCREEN WHEN MQTT DATA IS RECEIVED
-        Log.d("Main", message.toString())
         if (message.has("VP")) {
             var data = JSONObject(message.getString("VP"))
             var dir = data.getString("dir")
@@ -202,10 +206,10 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
     }
 
     fun calcDistanceForAll(){
-        //TODO: Sometimes crashes when there is not lat
 
         for (item in listDirection) {
-            if(item.lat.toDouble() != null){
+
+            if(item.lat != null){
                 var dist = locationService.calculateDistanceFromTwoPoints(
                     stopModel.lat.toDouble(),
                     stopModel.lon.toDouble(),
@@ -218,7 +222,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
         }
         for (item in listOtherDirection) {
 
-            if(item.lat.toDouble() != null){
+            if(item.lat != null) {
                 var dist = locationService.calculateDistanceFromTwoPoints(
                     stopModel.lat.toDouble(),
                     stopModel.lon.toDouble(),
@@ -227,7 +231,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                 )
                 item.dist = dist.toInt().toString()
             }
-
         }
 
         activity!!.runOnUiThread {

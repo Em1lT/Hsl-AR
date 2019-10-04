@@ -11,26 +11,21 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.Toast
-import com.example.hslar.Adapter.BusListAdapter
-import com.example.hslar.Adapter.BusRouteListAdapter
 import com.example.hslar.Adapter.StopListAdapter
 import com.example.hslar.MainActivity
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.PopUp.Dialog_popup
-
 import com.example.hslar.R
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.LocationService
-import kotlinx.android.synthetic.main.fragment_bus_list.view.*
-import kotlinx.android.synthetic.main.fragment_bus_route.view.*
 import kotlinx.android.synthetic.main.fragment_bus_route.view.buslineList
 import kotlinx.android.synthetic.main.fragment_stop_list.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 
 @SuppressLint("ValidFragment")
-class StopListFragment(val routeModel: RouteModel) : Fragment() {
+class StopListFragment(private val routeModel: RouteModel) : Fragment() {
 
     lateinit var httpService: HttpService
     lateinit var adapter: StopListAdapter
@@ -44,21 +39,18 @@ class StopListFragment(val routeModel: RouteModel) : Fragment() {
     ): View? {
         httpService = HttpService()
         locationService = LocationService(this.requireContext())
+
         val view = inflater.inflate(R.layout.fragment_stop_list, container, false)
+
         adapter =
             StopListAdapter(this.requireContext(), R.layout.stop_detail_list, list)
         view!!.buslineList.adapter = adapter
-
 
         getStops(routeModel.shortName)
         view.sortByClosestStop.setOnClickListener {
             startResponseAnimation(view.sortByClosestStop)
             sortByClosestStop()
         }
-
-        /*
-        *
-        * */
 
         view.buslineList.setOnItemLongClickListener { _, view, i, l ->
 
