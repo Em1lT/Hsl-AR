@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        tools:context=".StartActivity">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical" tools:layout_editor_absoluteX="8dp" tools:layout_editor_absoluteY="8dp">
+        <Button
+                android:id="@+id/hsl"
+                android:background="@drawable/check_button"
+                android:layout_width="match_parent"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_height="100dp" android:text="@string/hsl"/>
+
+
+        <Button
+                android:id="@+id/cityBikes"
+                android:background="@drawable/check_button"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" android:text="@string/citybikes"/>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -16,6 +16,8 @@
     <string name="sort">järjestele</string>
     <string name="closest">lähin</string>
     <string name="you">sinä</string>
+    <string name="hsl">Hsl</string>
+    <string name="citybikes">kaupunkipyörät</string>
 
     <!-- CB -->
     <string name="rent_title">Vuokraa pyörä</string>
