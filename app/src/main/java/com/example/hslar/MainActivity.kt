@@ -23,6 +23,7 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Button
 import com.example.hslar.Fragments.BusListFragment
 import com.example.hslar.Fragments.BusRouteFragment
 import com.example.hslar.Fragments.StopListFragment
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         bCheck.setOnClickListener {
 
-            startResponseAnimation()
+            startResponseAnimation(bCheck)
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                getLocation()
@@ -77,9 +78,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    fun startResponseAnimation(){
+    fun startResponseAnimation(button: Button){
 
-        bCheck.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
+        button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
     fun getLocation(){
         locationService.getLocation()
