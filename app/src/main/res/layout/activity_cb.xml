@@ -4,6 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/background"
         tools:context=".CBActivity">
 
     <LinearLayout
@@ -42,7 +43,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
                 android:layout_margin="3dp"
-                android:text=""
+                android:background="@drawable/check_button"
+                android:text="@string/rent_title"
                 android:textColor="@color/black"
                 android:textSize="28dp" />
 
@@ -51,7 +53,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
                 android:layout_margin="3dp"
-                android:text=""
+                android:background="@drawable/check_button"
+                android:text="@string/retutn_title"
                 android:textColor="@color/black"
                 android:textSize="28dp" />
 

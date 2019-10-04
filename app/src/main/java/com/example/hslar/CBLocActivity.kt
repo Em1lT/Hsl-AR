@@ -35,7 +35,7 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback, Serializable {
         mapFragment.getMapAsync(this)
 
         if (choice == "return") {
-            //CBlocationTitle.setText(R.string.retutn_title)
+            CBlocationTitle.setText(R.string.retutn_title)
         }
 
     }

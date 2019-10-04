@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
@@ -76,6 +77,11 @@ class MainActivity : AppCompatActivity() {
                 //TODO: Create notification service
             }
         }
+
+        test.setOnClickListener {
+            //startResponseAnimation()
+            testCB()
+        }
     }
     fun startResponseAnimation(){
 
@@ -122,5 +128,8 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()
+    }
+    fun testCB() {
+        startActivity(Intent(this, CBActivity::class.java))
     }
 }

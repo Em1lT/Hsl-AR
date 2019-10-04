@@ -16,4 +16,8 @@
     <string name="sort">järjestele</string>
     <string name="closest">lähin</string>
     <string name="you">sinä</string>
+
+    <!-- CB -->
+    <string name="rent_title">Vuokraa pyörä</string>
+    <string name="retutn_title">Palauta pyörä</string>
 </resources>

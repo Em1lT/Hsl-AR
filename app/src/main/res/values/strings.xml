@@ -16,4 +16,8 @@
     <string name="closest">closest</string>
     <string name="access_token" translatable="false"></string>
     <string name="you">you</string>
+
+    <!-- CB -->
+    <string name="rent_title">Rent a bike</string>
+    <string name="retutn_title">Return a bike</string>
 </resources>
