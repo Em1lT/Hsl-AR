@@ -61,14 +61,6 @@
                     android:background="@drawable/check_button"
                     android:elevation="15dp"
                     android:layout_height="wrap_content" android:id="@+id/bCheck"/>
-
-            <Button
-                    android:id="@+id/test"
-                    android:background="@drawable/check_button"
-                    android:layout_margin="4dp"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="Test CB" />
         </LinearLayout>
 
     <LinearLayout

@@ -77,11 +77,6 @@ class MainActivity : AppCompatActivity() {
                 //TODO: Create notification service
             }
         }
-
-        test.setOnClickListener {
-            //startResponseAnimation()
-            testCB()
-        }
     }
     fun startResponseAnimation(){
 
@@ -128,8 +123,5 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()
-    }
-    fun testCB() {
-        startActivity(Intent(this, CBActivity::class.java))
     }
 }

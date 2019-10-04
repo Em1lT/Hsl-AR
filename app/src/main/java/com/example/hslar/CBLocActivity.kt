@@ -44,7 +44,7 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback, Serializable {
         googleMap = map
         val cityBikes = CbList.cbList
 
-        //TODO: Check your own location, and get map closer to position
+        //TODO: Check your own location
 
         for(item in cityBikes) {
                 if (item.state == "Station on" && choice == "rent") {
