@@ -64,7 +64,6 @@ class CBActivity : AppCompatActivity() {
         for (i in 0 until bikeRentals.length()) {
             val item = bikeRentals.getJSONObject(i)
             //TODO: CALCULATES THE DISTANCE BETWEEN
-            Log.d("CB", item.getString("id"))
             CbList.cbList.add(
                 CBStationModel(
                     item.getString("id"),
