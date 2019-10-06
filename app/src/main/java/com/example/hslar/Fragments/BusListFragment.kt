@@ -87,6 +87,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
                 putExtra("bus", adapter.getItem(i))
                 putExtra("stop", stopModel)
+                putExtra("EndLine", secondEndingStop)
             }
 
             mqttService.deRegisterObserverFragment(this)
@@ -96,6 +97,8 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
             val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
                 putExtra("bus", adapter1.getItem(i))
                 putExtra("stop", stopModel)
+                putExtra("EndLine", firstEndingStop)
+
             }
             mqttService.deRegisterObserverFragment(this)
             startActivity(intent)
@@ -202,7 +205,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
 
         for (item in listDirection) {
 
-            Log.d("Main", "${item.lat}::::::::::::: ${item.longi}")
             if(item.lat != "null" && item.longi != "null"){
                 var dist = locationService.calculateDistanceFromTwoPoints(
                     stopModel.lat.toDouble(),
@@ -217,7 +219,6 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
         }
         for (item in listOtherDirection) {
 
-            Log.d("Main", "${item.lat}::::::::::::: ${item.longi}")
             if(item.lat != "null" && item.longi != "null"){
                 var dist = locationService.calculateDistanceFromTwoPoints(
                     stopModel.lat.toDouble(),

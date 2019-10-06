@@ -24,5 +24,10 @@
     <!-- Api Keys -->
     <string name="access_token" translatable="false"></string>
     <string name="citybikes">CityBikes</string>
+    <string name="distance">Distance from the stop</string>
+    <string name="simple">Simple</string>
+    <string name="detailed">Detailed</string>
+    <string name="doorClose">Doors are closed</string>
+    <string name="doorOpen">Doors are open</string>
 
 </resources>

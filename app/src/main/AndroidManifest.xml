@@ -17,20 +17,28 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".StartActivity">
+        <activity android:name=".StartActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SingleBusDetailActivity">
+        <activity android:name=".SingleBusDetailActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".CBLocActivity"/>
-        <activity android:name=".CBActivity"/>
-        <activity android:name=".MainActivity">
+        <activity android:name=".CBLocActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".CBActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+                  android:screenOrientation="portrait">
         </activity>
 
         <service android:name="org.eclipse.paho.android.service.MqttService">
+        </service>
+        <service android:name="com.example.hslar.Services.BgNotificationService"
+        android:exported="false">
         </service>
 
         <uses-library

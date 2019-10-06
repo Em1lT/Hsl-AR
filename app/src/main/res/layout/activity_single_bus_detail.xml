@@ -21,18 +21,28 @@
         <TextView
                 android:text="114"
                 android:textSize="30dp"
+                android:background="@drawable/check_button_toggle_left"
                 android:gravity="center"
                 android:layout_width="113dp"
                 android:layout_height="match_parent" android:id="@+id/busNum"/>
         <TextView
                 android:text="leppävaara"
-                android:layout_width="178dp"
+                android:layout_width="120dp"
+                android:background="@drawable/check_button_toggle_right"
                 android:gravity="center"
                 android:layout_height="match_parent" android:id="@+id/endStop"/>
+        <ImageButton
+                android:src="@drawable/ic_notifications_black_24dp"
+                android:layout_width="40dp"
+                android:background="@drawable/check_button"
+                android:layout_height="match_parent" android:id="@+id/bNotification" android:layout_weight="1"/>
+
         <Button
                 android:text="AR"
                 android:layout_width="40dp"
+                android:background="@drawable/check_button"
                 android:layout_height="match_parent" android:id="@+id/bAr" android:layout_weight="1"/>
+
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
@@ -72,6 +82,11 @@
                     android:layout_width="match_parent"
                     android:gravity="center"
                     android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="wrap_content" android:text="@string/distance"/>
             <TextView
                     android:text="@string/door_status"
                     android:layout_width="match_parent"
@@ -123,6 +138,11 @@
                     android:layout_width="match_parent"
                     android:gravity="center"
                     android:layout_height="wrap_content" android:id="@+id/odo"/>
+            <TextView
+                    android:id="@+id/dist"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="wrap_content" android:text="dist"/>
             <TextView
                     android:text="door status"
                     android:layout_width="match_parent"

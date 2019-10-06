@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private val PERMISSION_CODE = 10
 
+    //TODO: CHANGE ALL OF THE MODELS TO THE RIGHT VALUE
     @SuppressLint("ObsoleteSdkInt")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                    startFragment(BusRouteFragment(routes))
                 }
             }else{
-                Toast.makeText(this, "no bus route for this number", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "no route for this number", Toast.LENGTH_SHORT).show()
             }
         }
     }

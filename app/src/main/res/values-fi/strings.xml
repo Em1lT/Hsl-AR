@@ -18,8 +18,11 @@
     <string name="you">sinä</string>
     <string name="hsl">Hsl</string>
     <string name="citybikes">kaupunkipyörät</string>
+    <string name="simple">Helppo</string>
+    <string name="detailed">Yksityiskohtainen</string>
 
     <!-- CB -->
     <string name="rent_title">Vuokraa pyörä</string>
     <string name="retutn_title">Palauta pyörä</string>
+    <string name="distance">Etäisyys pysäkiltä</string>
 </resources>
