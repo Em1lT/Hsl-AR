@@ -17,13 +17,15 @@ import org.json.JSONArray
 
 /**
  * A simple [Fragment] subclass.
+ *Fragment that get Route data as a parameter. Puts them in a custom listView
+ *When something on the list is pressed call function in mainActivity that starts a StopListFragment
  *
  */
 @SuppressLint("ValidFragment")
-class BusRouteFragment(val busRoute: JSONArray) : Fragment() {
+class BusRouteFragment(private val busRoute: JSONArray) : Fragment() {
 
     var list = mutableListOf<RouteModel>()
-    lateinit var adapter: BusRouteListAdapter
+    private lateinit var adapter: BusRouteListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,8 +49,7 @@ class BusRouteFragment(val busRoute: JSONArray) : Fragment() {
             BusRouteListAdapter(this.requireContext(), R.layout.busline_list, list)
         view.buslineList.adapter = adapter
 
-        view.buslineList.setOnItemClickListener { adapterView, view, i, l ->
-
+        view.buslineList.setOnItemClickListener { _, _, i, _ ->
             (activity as MainActivity).callbackFromRoute(list[i])
         }
 

@@ -1,5 +1,6 @@
 package com.example.hslar.Services
 
+import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.util.Log
 import org.json.JSONObject
@@ -7,9 +8,14 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * 07.09.20109
+ * Service for helping with httpRequests. Sends an AsynTask to the api.digitransit.fi, with JSONOBJECT parameter. HSL uses a GRAPHQL backend but you can also send json data there
+ * Read the answer and return it
+ */
 class HttpService {
 
-    val TIMEOUT = 10*1000
+    val TIMEOUT = 10 * 1000
     val serverURL: String = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql"
 
 
@@ -17,7 +23,9 @@ class HttpService {
         val res = AsyncTaskHandle(queryObject).execute()
         return res.get()
     }
-    inner class AsyncTaskHandle(private val queryObject: JSONObject) : AsyncTask<String, String, String>(){
+
+    @SuppressLint("StaticFieldLeak")
+    inner class AsyncTaskHandle(private val queryObject: JSONObject) : AsyncTask<String, String, String>() {
 
         override fun doInBackground(vararg url: String?): String {
 
@@ -37,7 +45,7 @@ class HttpService {
 
             try {
                 httpClient.connect()
-                val os = httpClient.getOutputStream()
+                val os = httpClient.outputStream
                 val writer = BufferedWriter(OutputStreamWriter(os, "UTF-8"))
                 writer.write(queryObject.toString())
                 writer.flush()
@@ -57,7 +65,8 @@ class HttpService {
             }
             return respond
         }
-        fun readStream(inputStream: BufferedInputStream): String {
+
+        private fun readStream(inputStream: BufferedInputStream): String {
             val bufferedReader = BufferedReader(InputStreamReader(inputStream))
             val stringBuilder = StringBuilder()
             bufferedReader.forEachLine { stringBuilder.append(it) }

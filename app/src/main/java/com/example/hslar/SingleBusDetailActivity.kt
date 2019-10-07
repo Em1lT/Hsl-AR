@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageButton
+import android.widget.Toast
 import com.example.hslar.Model.BusDetailModel
 import com.example.hslar.Model.BusSimpleModel
 import com.example.hslar.Model.StopModel
@@ -33,7 +34,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
@@ -46,6 +46,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
+/**
+ * 07.09.2019
+ * Final Activity in the chain. Subsribes to the mqtt service and shows information about the the mobements of the single bus. Has a map that can be viewed, you can create notifications
+ * and a simple AR. Uses mapBox
+ *
+ */
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, OnMapReadyCallback {
 
     private lateinit var mqttService: MqttServiceCaller
@@ -53,7 +60,6 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
     private lateinit var internalStorageService: InternalStorageService
     private lateinit var httpService: HttpService
 
-    // private lateinit var mapFragment: SupportMapFragment
     private lateinit var notification: NotificationCompat.Builder
     private lateinit var mapBoxMap: MapboxMap
     private var topic: String = ""
@@ -61,18 +67,18 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
     private lateinit var busLocation: LatLng
     private lateinit var bus: BusSimpleModel
     private lateinit var choosedStop: StopModel
-    private lateinit var busSymbol: Symbol
     private val list = mutableListOf<StopModel>()
     private var followBus = true
 
-    private var progressMax: Int = 0
+    private var notificationDetail = false
+    private var notifiedDistance = 0
+    private var progressMax: Int = 100
     private var notificationSet = false
     private var notificationManager: NotificationManager? = null
-    val FOLLOWERS_CHANNEL = "MAINCHANNEL"
+    private val FOLLOWERS_CHANNEL = "MAINCHANNEL"
 
     var nullCount = 1
 
-    //TODO: MORE INFO FROM STATINONS & AR & NOTIFICATION?
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.access_token))
@@ -87,7 +93,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
         internalStorageService = InternalStorageService()
         getYourLocation()
         var busVeh = ""
-        for(i in 0 until (5 - bus.veh.length)){
+        for (i in 0 until (5 - bus.veh.length)) {
             busVeh += "0"
         }
         busVeh += bus.veh
@@ -97,7 +103,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
         mqttService = MqttServiceCaller(this, topic)
         mqttService.registerObserverActivity(this)
         busNum.text = bus.desi
-        var data = createPostJsonArr(bus.desi)
+        val data = createPostJsonArr(bus.desi)
         for (i in 0 until data.length()) {
             val item = data.getJSONObject(i)
             list.add(
@@ -120,11 +126,13 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
 
         notificationManager =
             getSystemService(
-                Context.NOTIFICATION_SERVICE) as NotificationManager
+                Context.NOTIFICATION_SERVICE
+            ) as NotificationManager
 
         val followersChannel = NotificationChannel(
             FOLLOWERS_CHANNEL, "CHANNEL",
-            NotificationManager.IMPORTANCE_DEFAULT)
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
 
         followersChannel.lightColor = Color.GREEN
 
@@ -132,7 +140,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
 
 
         showNavi.setOnClickListener {
-            if(navigationMenu.visibility == View.INVISIBLE){
+            if (navigationMenu.visibility == View.INVISIBLE) {
                 navigationMenu.visibility = View.VISIBLE
             } else {
                 navigationMenu.visibility = View.INVISIBLE
@@ -155,12 +163,16 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
             startResponseAnimation(bBus)
             moveCameraToLocation(busLocation)
         }
-        if(bus.dist.toInt() > 1000){
+        if (bus.dist.toInt() > 1000) {
             bNotification.isClickable = false
         }
         bNotification.setOnClickListener {
+            if (notificationSet) {
                 val dial = NotificationPopUp(bus.dist.toInt())
-                dial.show(supportFragmentManager,"Notification_popup")
+                dial.show(supportFragmentManager, "Notification_popup")
+            } else {
+                Toast.makeText(this, "Notification already set", Toast.LENGTH_LONG).show()
+            }
         }
         bAr.setOnClickListener {
             //TODO: AR ELEMENT, could be made with Unity and combine to activity??
@@ -168,9 +180,9 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-      mapBoxMap = mapboxMap
+        mapBoxMap = mapboxMap
 
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {style ->
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
 
             val geoJson = GeoJsonOptions().withTolerance(0.4f)
             val symbolManager = SymbolManager(mapBox, mapboxMap, style, null, geoJson)
@@ -179,19 +191,23 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
             style.addImage(
                 "HOME_STATION",
                 BitmapUtils.getBitmapFromDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.ic_store_black_24dp))!!, true)
+                    ContextCompat.getDrawable(this, R.drawable.ic_store_black_24dp)
+                )!!, true
+            )
 
             style.addImage(
                 "OTHER_STATION",
                 BitmapUtils.getBitmapFromDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.ic_store_black2_24dp))!!, true)
+                    ContextCompat.getDrawable(this, R.drawable.ic_store_black2_24dp)
+                )!!, true
+            )
 
 
-            for(item in list){
+            for (item in list) {
 
                 val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
 
-                if(item.lat == choosedStop.lat && item.lon == choosedStop.lon) {
+                if (item.lat == choosedStop.lat && item.lon == choosedStop.lon) {
 
                     val symbol6 = SymbolOptions()
                         .withLatLng(latLng)
@@ -217,24 +233,30 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
             style.addImage(
                 "YOU",
                 BitmapUtils.getBitmapFromDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.ic_person_black_24dp))!!, true)
+                    ContextCompat.getDrawable(this, R.drawable.ic_person_black_24dp)
+                )!!, true
+            )
 
             style.addImage(
                 "BUS_MARKER",
                 BitmapUtils.getBitmapFromDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.ic_directions_bus_black_24dp))!!, true)
+                    ContextCompat.getDrawable(this, R.drawable.ic_directions_bus_black_24dp)
+                )!!, true
+            )
 
             style.addSource(GeoJsonSource("source-id"))
-            style.addLayer(SymbolLayer("bus","source-id").withProperties(
-                iconImage("BUS_MARKER"),
-                iconIgnorePlacement(true),
-                iconAllowOverlap(true),
-                iconSize(1.3f)
-            ))
+            style.addLayer(
+                SymbolLayer("bus", "source-id").withProperties(
+                    iconImage("BUS_MARKER"),
+                    iconIgnorePlacement(true),
+                    iconAllowOverlap(true),
+                    iconSize(1.3f)
+                )
+            )
 
             val latLng1 = LatLng(myLocation.latitude, myLocation.longitude)
 
-            var symbol2 = SymbolOptions()
+            val symbol2 = SymbolOptions()
                 .withLatLng(latLng1)
                 .withIconImage("YOU")
                 .withIconSize(1.3f)
@@ -249,10 +271,11 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
 
 
     }
-    fun createPostJsonArr(route: String): JSONArray {
-        var stopArray: JSONArray
+
+    private fun createPostJsonArr(route: String): JSONArray {
+        val stopArray: JSONArray
         val json = JSONObject()
-        json.put("query", "{routes(name:\"${route}\"){ stops {gtfsId name lat lon zoneId code desc}}}")
+        json.put("query", "{routes(name:\"$route\"){ stops {gtfsId name lat lon zoneId code desc}}}")
         val res = httpService.postRequest(json)
         val data = JSONArray(JSONObject(JSONObject(res).getString("data")).getString("routes"))
         val stopNames = JSONObject(data[0].toString()).getString("stops")
@@ -261,8 +284,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
         return stopArray
     }
 
-    fun updateMarkers(bus: BusDetailModel) {
-        val latLng = LatLng(bus.lat.toDouble(), bus.longi.toDouble())
+    private fun updateMarkers(bus: BusDetailModel) {
         if (mapBoxMap.style != null) {
             val busSource = mapBoxMap.style!!.getSource("source-id") as GeoJsonSource
             busSource.setGeoJson(
@@ -272,11 +294,12 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
             )
         }
     }
-    private fun getYourLocation(){
-        val data = internalStorageService.readOnFile(this,"location.txt")
+
+    private fun getYourLocation() {
+        val data = internalStorageService.readOnFile(this, "location.txt")
         val lat: Double
         val long: Double
-        if(data!!.isNotEmpty()) {
+        if (data!!.isNotEmpty()) {
             lat = data.substringBefore(":").toDouble()
             long = data.substringAfter(":").toDouble()
             myLocation = LatLng(lat, long)
@@ -296,7 +319,7 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
         }
         //Vehicle has arrived to a stop
         if (message.has("ARS")) {
-            BusOnStop(message)
+            busOnStop(message)
         }
         //Vehicle passes through a stop without stopping
         if (message.has("PAS")) {
@@ -328,34 +351,35 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
 
         }
     }
+
     override fun onDialogClickListener(structure: Boolean, notificationDistance: Int) {
         notificationSet = true
-        Log.d("Main", "Start Notification with ${structure} distance between $notificationDistance")
+        notificationDetail = structure
+
         createNotificationsWithProgress(notificationDistance)
-        /*if(structure){
+        if (notificationDetail) {
             createNotificationsWithProgress(notificationDistance)
         } else {
-            createNotification(notificationDistance)
-        }*/
+            createNotification()
+        }
     }
-    private fun createNotification(notificationDistance: Int) {
+
+    private fun createNotification() {
 
         notification = NotificationCompat.Builder(this, "MAINCHANNEL")
             .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-            .setContentTitle("Bus at stop ${choosedStop.name}")
-            .setProgress(progressMax,0 ,false)
+            .setContentTitle("Notification set at stop ${choosedStop.name}")
+            .setProgress(progressMax, 0, false)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
-
     }
-    private fun createNotificationsWithProgress(notificationDistance: Int) {
-        progressMax = notificationDistance
 
+    private fun createNotificationsWithProgress(notificationDistance: Int) {
+
+        notifiedDistance = notificationDistance
         notification = NotificationCompat.Builder(this, FOLLOWERS_CHANNEL)
             .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-            .setContentTitle("Bus at stop ${choosedStop.name}")
-            .setProgress(progressMax,0 ,false)
+            .setContentTitle("Notification set at stop ${choosedStop.name}")
+            .setProgress(progressMax, 0, false)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -364,14 +388,14 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
 
     }
 
-    private fun moveCameraToLocation(latLng: LatLng){
-        var position = CameraPosition.Builder()
+    private fun moveCameraToLocation(latLng: LatLng) {
+        val position = CameraPosition.Builder()
             .target(LatLng(latLng.latitude, latLng.longitude)).zoom(15.0).build()
 
         mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 3500)
     }
 
-    private fun BusOnStop(message: JSONObject) {
+    private fun busOnStop(message: JSONObject) {
         val data = JSONObject(message.getString("ARS"))
         val newBus = createBusModel(data, "ARS")
         updateOverley(newBus)
@@ -384,14 +408,14 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
     }
 
 
-    fun vehiclePosition(message: JSONObject){
+    private fun vehiclePosition(message: JSONObject) {
         val data = JSONObject(message.getString("VP"))
         val newBus = createBusModel(data, "VP")
         updateOverley(newBus)
     }
 
-    fun createBusModel(data: JSONObject, event: String): BusDetailModel {
-        val busDetail = BusDetailModel(
+    private fun createBusModel(data: JSONObject, event: String): BusDetailModel {
+        return BusDetailModel(
             data.getString("desi"),
             data.getString("dir"),
             data.getString("oper"),
@@ -415,15 +439,20 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
             data.getString("occu"),
             event
         )
-        return busDetail
     }
+
     @SuppressLint("SetTextI18n")
-    fun updateOverley(newBus: BusDetailModel){
+    fun updateOverley(newBus: BusDetailModel) {
 
         updateMarkers(newBus)
         busLocation = LatLng(newBus.lat.toDouble(), newBus.longi.toDouble())
 
-        val dis = locationService.calculateDistanceFromTwoPoints(choosedStop.lat.toDouble(), choosedStop.lon.toDouble(), newBus.lat.toDouble(), newBus.longi.toDouble()).roundToInt()
+        val dis = locationService.calculateDistanceFromTwoPoints(
+            choosedStop.lat.toDouble(),
+            choosedStop.lon.toDouble(),
+            newBus.lat.toDouble(),
+            newBus.longi.toDouble()
+        ).roundToInt()
 
         bus.dist = dis.toString()
         checkStation(newBus.stop)
@@ -431,43 +460,58 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
         lat.text = newBus.lat
         longi.text = newBus.longi
         odo.text = newBus.odo
-        if(dis > 1000){
+        if (dis > 1000) {
             dist.text = "${("%.2f".format(bus.dist.toDouble() / 1000))} km"
         } else {
             dist.text = "${bus.dist} m"
         }
-        if(newBus.drst.toInt() == 0){
+        if (newBus.drst.toInt() == 0) {
             drs.text = getString(R.string.doorClose)
-        } else{
+        } else {
             drs.text = getString(R.string.doorOpen)
         }
         event.text = newBus.event
         hdg.text = newBus.hdg
 
-        if(followBus){
+        if (followBus) {
             moveCameraToLocation(busLocation)
         }
-        if(notificationSet){
+        if (notificationSet) {
             updateNotification()
         }
 
     }
-    private fun updateNotification(){
 
-        if(bus.dist.toInt() > 10){
-            notification.setProgress(progressMax, ((progressMax / bus.dist.toInt()) * 100), false)
-            notificationManager!!.notify(2, notification.build())
+    @SuppressLint("LogNotTimber")
+    private fun updateNotification() {
+
+        if (notificationDetail) {
+            Log.d("Main", "here")
+            Log.d("Main", (notifiedDistance / bus.dist.toDouble() * 100).toString())
+            if ((notifiedDistance / bus.dist.toDouble() * 100) <= 100) {
+                notification.setProgress(progressMax, ((notifiedDistance / bus.dist.toDouble()) * 100).toInt(), false)
+                notificationManager!!.notify(2, notification.build())
+            } else {
+                notification.setContentTitle("Bus is now $notifiedDistance meters from the station")
+                notification.setOngoing(false)
+                notificationManager!!.notify(2, notification.build())
+                notificationSet = false
+            }
         } else {
-            notification.setContentText("Bus is now $progressMax from the station")
-            notificationManager!!.notify(2, notification.build())
+            if (bus.dist.toDouble() < notifiedDistance.toDouble()) {
+                notification.setContentTitle("Bus is now $notifiedDistance meters from the station")
+                notificationManager!!.notify(2, notification.build())
+                notificationSet = false
+            }
         }
+
 
     }
 
     private fun checkStation(stopNum: String) {
 
-        if(nullCount % 10 == 0){
-            if(stopNum != "null") {
+        if (nullCount % 10 == 0) {
+            if (stopNum != "null") {
 
                 val json = JSONObject()
                 json.put("query", "{stop(id: \"HSL:$stopNum\"){name lat lon}}")
@@ -481,16 +525,18 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
                 stop.text = ""
                 nullCount = 1
             }
-        }else {
+        } else {
             nullCount++
         }
     }
 
     override fun onDestroy() {
         mqttService.unsubscribe(topic)
+        mqttService.deRegisterObserverActivity(this)
         super.onDestroy()
         mapBox.onDestroy()
     }
+
     override fun onStart() {
         super.onStart()
         mapBox.onStart()
@@ -522,7 +568,8 @@ class SingleBusDetailActivity : AppCompatActivity(), Observer, OnButtonClick, On
         super.onPause()
         mapBox.onPause()
     }
-    fun startResponseAnimation(button: ImageButton){
+
+    fun startResponseAnimation(button: ImageButton) {
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
 }

@@ -7,6 +7,11 @@ import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
+/**
+ * 07.09.2019
+ * Used to get the location using Google Fused Location. Also used to calculate distances between different things
+ *
+ */
 class LocationService (val context: Context) {
 
     lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
@@ -19,26 +24,25 @@ class LocationService (val context: Context) {
         mFusedLocationProviderClient.lastLocation.addOnSuccessListener {location: Location? ->
 
             Log.d("Main", "${location!!.longitude}")
-            Log.d("Main", "${location!!.latitude}")
-            var data = "${location!!.latitude}:${location!!.longitude}"
+            Log.d("Main", "${location.latitude}")
+            val data = "${location.latitude}:${location.longitude}"
             internalStorageService.writeOnAFile(context,"location.txt", data)
         }
     }
     fun calculateDistanceFromTwoPoints(latitude: Double, longitude: Double, latitude1: Double, longitude1: Double): Float {
 
-            var distance = createLocation(latitude, longitude).distanceTo(createLocation(latitude1, longitude1))
-            return distance
+        return createLocation(latitude, longitude).distanceTo(createLocation(latitude1, longitude1))
     }
     fun calculateDistance(latitude1: Double, longitude1: Double): Float? {
 
-        var data = internalStorageService.readOnFile(context,"location.txt")
-        var lat = 0.0
-        var long = 0.0
+        val data = internalStorageService.readOnFile(context,"location.txt")
+        val lat: Double
+        val long: Double
 
         return if(data!!.isNotEmpty()) {
-            lat = data!!.substringBefore(":").toDouble()
+            lat = data.substringBefore(":").toDouble()
             long = data.substringAfter(":").toDouble()
-            var distance = createLocation(lat, long).distanceTo(createLocation(latitude1, longitude1))
+            val distance = createLocation(lat, long).distanceTo(createLocation(latitude1, longitude1))
             distance
 
         }else {
@@ -47,14 +51,14 @@ class LocationService (val context: Context) {
 
     }
     fun getYourLocation(): Location? {
-        var data = internalStorageService.readOnFile(context,"location.txt")
-        var lat: Double
-        var long: Double
+        val data = internalStorageService.readOnFile(context,"location.txt")
+        val lat: Double
+        val long: Double
 
         return if(data!!.isNotEmpty()) {
-            lat = data!!.substringBefore(":").toDouble()
+            lat = data.substringBefore(":").toDouble()
             long = data.substringAfter(":").toDouble()
-            var distance = createLocation(lat, long)
+            val distance = createLocation(lat, long)
             distance
 
         }else {
@@ -63,7 +67,7 @@ class LocationService (val context: Context) {
     }
 
     fun createLocation(latitude: Double, longitude: Double): Location{
-        var loc = Location("")
+        val loc = Location("")
         loc.latitude = latitude
         loc.longitude = longitude
         return loc

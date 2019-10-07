@@ -1,5 +1,5 @@
 package com.example.hslar.Observer
 
 interface OnButtonClick {
-    fun onDialogClickListener(Structure: Boolean, notificationDistance: Int)
+    fun onDialogClickListener(structure: Boolean, notificationDistance: Int)
 }

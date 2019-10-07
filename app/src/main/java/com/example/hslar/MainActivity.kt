@@ -22,34 +22,28 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * 07.09.2019
+ * When choosing the upper button in the StartActivity you will come here. Contains 3 fragments.
+ * This activity gets the Route, stops and current ongoing busses, trams, trains or metros.
+ * Every step has it's own activity/fragment
+ * First we get the route id with current activity. We also get the current location with googleFusedLocations API
+ * Then on the function getId() we get the information about the route. We call hsl api with HTTPService.
+ * Finally we pass the data BusRouteFragment
+ */
 
 //TODO: Create strings values for all the texts
-//TODO: Create strings values for different languages
-//TODO: Databinding for adapters
-//TODO: clean lint errors
-//TODO: When closing application is causes an crash... (doesn't affect run of the application. no noticeable to user)
 //TODO: Create detailed comments for every class
-//TODO: Some kind of notification when bus is close
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var httpService: HttpService
-    lateinit var  locationService: LocationService
+    private lateinit var httpService: HttpService
+    private lateinit var locationService: LocationService
 
-    private val PERMISSION_CODE = 10
-
-    //TODO: CHANGE ALL OF THE MODELS TO THE RIGHT VALUE
     @SuppressLint("ObsoleteSdkInt")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
-            || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED){
-
-            val permission = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-            requestPermissions(permission, PERMISSION_CODE)
-        }
 
         httpService = HttpService()
         locationService = LocationService(this)
@@ -59,41 +53,45 @@ class MainActivity : AppCompatActivity() {
 
             startResponseAnimation(bCheck)
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-               getLocation()
-               getbusId(busline.text.toString())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getLocation()
+                getId(busline.text.toString())
             } else {
                 //TODO: Create notification service
             }
         }
     }
-    fun startResponseAnimation(button: Button){
+
+    private fun startResponseAnimation(button: Button) {
 
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
-    fun getLocation(){
+
+    private fun getLocation() {
         locationService.getLocation()
     }
-    fun getbusId(line: String) {
-        var json = JSONObject()
+
+    private fun getId(line: String) {
+        val json = JSONObject()
         json.put("query", "{routes(name:\"$line\"){gtfsId shortName longName mode}}")
         val res = httpService.postRequest(json)
-        var data = JSONObject(res)
+        val data = JSONObject(res)
 
-        if(data.has("data")){
-            var dataRoute = JSONObject(data.getString("data"))
-            if(JSONArray(dataRoute.getString("routes")).length() > 0){
+        if (data.has("data")) {
+            val dataRoute = JSONObject(data.getString("data"))
+            if (JSONArray(dataRoute.getString("routes")).length() > 0) {
 
-                var routes = JSONArray(dataRoute.getString("routes"))
+                val routes = JSONArray(dataRoute.getString("routes"))
 
-                if(routes.length() > 0){
-                   startFragment(BusRouteFragment(routes))
+                if (routes.length() > 0) {
+                    startFragment(BusRouteFragment(routes))
                 }
-            }else{
+            } else {
                 Toast.makeText(this, "no route for this number", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     fun callbackFromRoute(routeModel: RouteModel) {
         startFragment(
             StopListFragment(
@@ -101,14 +99,16 @@ class MainActivity : AppCompatActivity() {
             )
         )
     }
-    fun callbackFromStop(routeModel: RouteModel, stopModel: StopModel){
+
+    fun callbackFromStop(routeModel: RouteModel, stopModel: StopModel) {
         startFragment(
             BusListFragment(
                 routeModel, stopModel
             )
         )
     }
-    private fun startFragment(fragment: Fragment){
+
+    private fun startFragment(fragment: Fragment) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()

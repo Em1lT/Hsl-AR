@@ -8,10 +8,11 @@ import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.ImageButton
 import com.example.hslar.R
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
@@ -28,6 +29,8 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import com.mapbox.mapboxsdk.utils.BitmapUtils
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute
 import kotlinx.android.synthetic.main.pop_up.*
@@ -36,15 +39,25 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-@SuppressLint("ValidFragment")
-class Dialog_popup(val location: Location, val location1: Location) : DialogFragment(), OnMapReadyCallback {
+/**
+ * 07.09.2019
+ * DialogFragment that displays a map to the choosed destination
+ *
+ */
 
-    var cameraOnYou = true
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@SuppressLint("ValidFragment")
+class DialogPopup(val location: Location, val location1: Location) : DialogFragment(), OnMapReadyCallback {
+
+    private var cameraOnYou = true
+    private var walkingOrNot = true
+
+    lateinit var route: DirectionsRoute
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         map = mapboxMap
 
-        mapboxMap.setStyle(Style.MAPBOX_STREETS){
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
 
             val from = Point.fromLngLat(location.longitude, location.latitude)
             val to = Point.fromLngLat(location1.longitude, location1.latitude)
@@ -55,13 +68,27 @@ class Dialog_popup(val location: Location, val location1: Location) : DialogFrag
             val geoJson = GeoJsonOptions().withTolerance(0.4f)
             val symbolManager = SymbolManager(mapView1, mapboxMap, it, null, geoJson)
 
-            it.addImage("ID_YOU",
-                BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(activity!!.applicationContext, R.drawable.ic_person_black_24dp))!!,
-                true)
+            it.addImage(
+                "ID_YOU",
+                BitmapUtils.getBitmapFromDrawable(
+                    ContextCompat.getDrawable(
+                        activity!!.applicationContext,
+                        R.drawable.ic_person_black_24dp
+                    )
+                )!!,
+                true
+            )
 
-            it.addImage("ID_BUS",
-                BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(activity!!.applicationContext, R.drawable.ic_store_black_24dp))!!,
-                true)
+            it.addImage(
+                "ID_BUS",
+                BitmapUtils.getBitmapFromDrawable(
+                    ContextCompat.getDrawable(
+                        activity!!.applicationContext,
+                        R.drawable.ic_store_black_24dp
+                    )
+                )!!,
+                true
+            )
 
             val symbol = SymbolOptions()
                 .withLatLng(latLng)
@@ -86,10 +113,11 @@ class Dialog_popup(val location: Location, val location1: Location) : DialogFrag
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
 
-            getRoute(from, to)
+            getRouteWalking(from, to)
         }
 
     }
+
     var navigationMapRoute: NavigationMapRoute? = null
     lateinit var map: MapboxMap
 
@@ -104,13 +132,26 @@ class Dialog_popup(val location: Location, val location1: Location) : DialogFrag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.showNavi.setOnClickListener {
+            if (view.navigationMenu1.visibility == View.INVISIBLE) {
+                view.navigationMenu1.visibility = View.VISIBLE
+            } else {
+                view.navigationMenu1.visibility = View.INVISIBLE
+            }
+        }
+        view.walkOrDrive.setOnClickListener {
+            startResponseAnimation(view.walkOrDrive)
+        }
         view.you.setOnClickListener {
 
-            val position: CameraPosition = if(cameraOnYou){
+            startResponseAnimation(view.you)
+            val position: CameraPosition = if (cameraOnYou) {
+                view.you.setImageResource(R.drawable.ic_person_black_24dp)
                 cameraOnYou = false
                 CameraPosition.Builder()
                     .target(LatLng(location1.latitude, location1.longitude)).zoom(15.0).build()
             } else {
+                view.you.setImageResource(R.drawable.ic_store_black_24dp)
                 cameraOnYou = true
                 CameraPosition.Builder()
                     .target(LatLng(location.latitude, location.longitude)).zoom(15.0).build()
@@ -118,45 +159,96 @@ class Dialog_popup(val location: Location, val location1: Location) : DialogFrag
             }
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
         }
+        view.route.setOnClickListener {
+            val navigationLauncherOptions = NavigationLauncherOptions.builder() //1
+                .directionsRoute(route) //2
+                .shouldSimulateRoute(true) //3
+                .build()
+
+            NavigationLauncher.startNavigation(activity, navigationLauncherOptions) //4
+        }
         view.mapView1.onCreate(savedInstanceState)
         view.mapView1.getMapAsync(this)
     }
-    fun getRoute(origin: Point, dest: Point){
-        Thread(Runnable{
 
-        NavigationRoute.builder(activity!!.applicationContext)
-            .accessToken(Mapbox.getAccessToken()!!)
-            .origin(origin)
-            .destination(dest)
-            .profile(DirectionsCriteria.PROFILE_WALKING)
-            .build()
-            .getRoute(object : Callback<DirectionsResponse> { //6
-                override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
+    private fun startResponseAnimation(button: ImageButton) {
+        button.startAnimation(AnimationUtils.loadAnimation(activity!!.applicationContext, R.anim.button_response))
+    }
 
-                }
-                override fun onResponse(call: Call<DirectionsResponse>,
-                                        response: Response<DirectionsResponse>) {
-                    if(response.body() == null){
-                        Log.d("Main", "error, body is null")
-                        return
-                    } else if(response.body()!!.routes().size == 0) {
-                        Log.d("", "no routes found")
-                        return
+    private fun getRouteWalking(origin: Point, dest: Point) {
+        Thread(Runnable {
+
+            NavigationRoute.builder(activity!!.applicationContext)
+                .accessToken(Mapbox.getAccessToken()!!)
+                .origin(origin)
+                .destination(dest)
+                .profile(DirectionsCriteria.PROFILE_WALKING)
+                .build()
+                .getRoute(object : Callback<DirectionsResponse> { //6
+                    override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
+
                     }
 
-                    var route = response.body()!!.routes()[0] as DirectionsRoute
-                    Log.d("Main", route.toString())
+                    override fun onResponse(
+                        call: Call<DirectionsResponse>,
+                        response: Response<DirectionsResponse>
+                    ) {
+                        if (response.body() == null) {
+                            return
+                        } else if (response.body()!!.routes().size == 0) {
+                            return
+                        }
 
-                    if(navigationMapRoute != null){
-                        navigationMapRoute!!.removeRoute()
-                    } else {
-                        navigationMapRoute = NavigationMapRoute(null, mapView1, map)
+                        route = response.body()!!.routes()[0] as DirectionsRoute
+
+                        if (navigationMapRoute != null) {
+                            return
+                        } else {
+                            navigationMapRoute = NavigationMapRoute(null, mapView1, map)
+                        }
+                        navigationMapRoute!!.addRoute(route)
                     }
-                    navigationMapRoute!!.addRoute(route)
-                }
-            })
+                })
         }).start()
     }
+
+    fun getRouteDriving(origin: Point, dest: Point) {
+        Thread(Runnable {
+
+            NavigationRoute.builder(activity!!.applicationContext)
+                .accessToken(Mapbox.getAccessToken()!!)
+                .origin(origin)
+                .destination(dest)
+                .profile(DirectionsCriteria.PROFILE_DRIVING)
+                .build()
+                .getRoute(object : Callback<DirectionsResponse> { //6
+                    override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
+
+                    }
+
+                    override fun onResponse(
+                        call: Call<DirectionsResponse>,
+                        response: Response<DirectionsResponse>
+                    ) {
+                        if (response.body() == null) {
+                            return
+                        } else if (response.body()!!.routes().size == 0) {
+                            return
+                        }
+
+                        route = response.body()!!.routes()[0] as DirectionsRoute
+
+                        if (navigationMapRoute != null) {
+                            return
+                        } else {
+                            navigationMapRoute = NavigationMapRoute(null, mapView1, map)
+                        }
+                        navigationMapRoute!!.addRoute(route)
+                    }
+                })
+        }).start()
+    }
+
     override fun onStart() {
         super.onStart()
         view!!.mapView1.onStart()
@@ -183,41 +275,17 @@ class Dialog_popup(val location: Location, val location1: Location) : DialogFrag
     }
 
     override fun onDismiss(dialog: DialogInterface?) {
-      /*  if (view!!.mapView1 != null) {
-            view!!.mapView1.onPause()
-            view!!.mapView1.onStop()
-            //TODO: mapBox freezes on with onDestroy method?? check https://github.com/mapbox/mapbox-gl-native/blob/ba1d5b8b41cc7082cde60d5f3fa4b4d36427ff2a/platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/maplayout/MapInDialogActivity.java#L73
-            //view!!.mapView1.onDestroy()
-        }*/
+        /*  if (view!!.mapView1 != null) {
+              view!!.mapView1.onPause()
+              view!!.mapView1.onStop()
+              //view!!.mapView1.onDestroy()
+          }*/
         super.dismiss()
     }
-    override fun onDestroyView() {
+
+}
+/*override fun onDestroyView() {
         super.onDestroyView()
         /*if(view!!.mapView1 != null){
             view!!.mapView1.onDestroy()
         }*/
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        view!!.mapView1.onSaveInstanceState(outState)
-    }
-
-    /*
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map
-        val latLng = LatLng(location.latitude, location.longitude)
-        val latLng1 = LatLng(location1.latitude, location1.longitude)
-
-        googleMap.addMarker(MarkerOptions().position(latLng).title("You").icon(
-            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)))
-        googleMap.addMarker(MarkerOptions().position(latLng1).title("Stop"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f))
-    }
-
-    override fun onDestroy() {
-        fragmentManager!!.beginTransaction().remove(mapFragment).commit()
-
-        super.onDestroy()
-    }*/
-}

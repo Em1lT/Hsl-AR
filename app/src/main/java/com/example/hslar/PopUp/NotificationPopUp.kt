@@ -16,6 +16,11 @@ import com.example.hslar.R
 import kotlinx.android.synthetic.main.notification_pop_up.*
 import kotlinx.android.synthetic.main.notification_pop_up.view.*
 
+/**
+ * 07.09.2019
+ * DialogFragment for building a notification that can be in background also
+ *
+ */
 
 @SuppressLint("ValidFragment")
 class NotificationPopUp(val dist: Int) : DialogFragment(){

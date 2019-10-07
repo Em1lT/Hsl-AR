@@ -10,8 +10,12 @@ import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.json.JSONObject
 
-
-class MqttServiceCaller(val context: Context,val topic: String): Runnable {
+/**
+ * 07.09.2019
+ * Using to communicate to the mqtt service. Connecting to the client, subsricing to it. disconnet & unsubscribe.
+ * This has more explained because this is complex
+ */
+class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
 
     val TAG = "Main"
     private val observers = mutableSetOf<BusListFragment>()
@@ -21,50 +25,52 @@ class MqttServiceCaller(val context: Context,val topic: String): Runnable {
     var connection: Boolean = false
 
     override fun run() {
-       clientConnect()
+        clientConnect()
     }
 
-    fun clientConnect(){
+    //Connect to the mqtt service, ActionListener listens if call is success or failure
+    private fun clientConnect() {
         Log.d(TAG, "connecting to client")
 
-            try {
-                var token = client.connect()
-                token.actionCallback = object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken) {
-                        connection = true
-                        Log.d(TAG, "Mqtt success")
-                        subscribe(topic)
-                    }
-
-                    override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                        // Something went wrong e.g. connection timeout or firewall problems
-                        Log.d(TAG, "onFailure $exception")
-
-                    }
+        try {
+            var token = client.connect()
+            token.actionCallback = object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken) {
+                    connection = true
+                    Log.d(TAG, "Mqtt success")
+                    subscribe(topic)
                 }
-            } catch (e: MqttException) {
-                e.printStackTrace()
+
+                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Log.d(TAG, "onFailure $exception")
+
+                }
+            }
+        } catch (e: MqttException) {
+            e.printStackTrace()
+        }
+
+        client.setCallback(object : MqttCallback {
+            override fun deliveryComplete(token: IMqttDeliveryToken) {
+
             }
 
-            client.setCallback(object : MqttCallback {
-                override fun deliveryComplete(token: IMqttDeliveryToken) {
+            override fun connectionLost(cause: Throwable) {
+                connection = false
+                Log.d(TAG, "connection lost")
+            }
 
-                }
+            @Throws(Exception::class)
+            override fun messageArrived(topic: String, message: MqttMessage) {
+                messageReceived(message)
+            }
 
-                override fun connectionLost(cause: Throwable) {
-                    connection = false
-                    Log.d(TAG, "connection lost")
-                }
-
-                @Throws(Exception::class)
-                override fun messageArrived(topic: String, message: MqttMessage) {
-                    messageReceived(message)
-                }
-
-            })
+        })
     }
 
-    fun disconnect(){
+    //disconnect from the service. if you are not subscribed service will disconnect after some time. also a listner for the result
+    fun disconnect() {
         try {
             val disconToken = client.disconnect()
             disconToken.actionCallback = object : IMqttActionListener {
@@ -86,18 +92,21 @@ class MqttServiceCaller(val context: Context,val topic: String): Runnable {
         }
 
     }
-    fun messageReceived(message: MqttMessage){
 
-        var json = JSONObject(message.toString())
-        for(items in observers){
+    //When message is received call the observers that there is a new message incoming.
+    fun messageReceived(message: MqttMessage) {
+
+        val json = JSONObject(message.toString())
+        for (items in observers) {
             items.newMessage(json)
         }
-        for(items in observers1){
+        for (items in observers1) {
             items.newMessage(json)
         }
-
     }
-    fun subscribe(topic: String){
+
+    //When connected to the message broker you can
+    fun subscribe(topic: String) {
         val qos = 1
         try {
             val subToken = client.subscribe(topic, qos)
@@ -123,7 +132,8 @@ class MqttServiceCaller(val context: Context,val topic: String): Runnable {
         }
 
     }
-    fun unsubscribe(topic: String){
+
+    fun unsubscribe(topic: String) {
 
         try {
             val unsubToken = client.unsubscribe(topic)
@@ -150,16 +160,20 @@ class MqttServiceCaller(val context: Context,val topic: String): Runnable {
         }
 
     }
+
     fun registerObserverFragment(observer: BusListFragment) {
         observers.add(observer)
     }
-    fun deRegisterObserverFragment(observer: Fragment){
+
+    fun deRegisterObserverFragment(observer: Fragment) {
         observers.remove(observer)
     }
+
     fun registerObserverActivity(observer: SingleBusDetailActivity) {
         observers1.add(observer)
     }
-    fun deRegisterObserverActivity(observer: SingleBusDetailActivity){
+
+    fun deRegisterObserverActivity(observer: SingleBusDetailActivity) {
         observers1.remove(observer)
     }
 }
