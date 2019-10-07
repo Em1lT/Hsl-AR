@@ -1,10 +1,8 @@
 package com.example.hslar
 
+import android.content.Context
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
-import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
 import com.mapbox.mapboxsdk.Mapbox
@@ -14,31 +12,27 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
-import com.mapbox.mapboxsdk.utils.BitmapUtils
 import kotlinx.android.synthetic.main.activity_cbloc.*
-import com.mapbox.geojson.Feature
-import android.graphics.PointF
-
-
+import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import android.support.v4.graphics.drawable.DrawableCompat
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.support.v4.content.res.ResourcesCompat
+import android.support.annotation.ColorInt
+import android.support.annotation.DrawableRes
+import com.mapbox.mapboxsdk.annotations.Icon
+import kotlin.math.roundToInt
 
 
 class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    lateinit var httpService: HttpService
     private lateinit var locationService: LocationService
     private lateinit var internalStorageService: InternalStorageService
-
-    //lateinit var mapFragment: SupportMapFragment
-    //lateinit var googleMap: GoogleMap
-
 
     private lateinit var mapBoxMap: MapboxMap
     private lateinit var myLocation: LatLng
 
-    //var list = mutableListOf<CBStationModel>()
     var choice: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +40,6 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
         Mapbox.getInstance(this, getString(R.string.access_token))
         setContentView(R.layout.activity_cbloc)
 
-        //list = intent.extras.getSerializable("cb") as MutableList<CBStationModel>
         choice = intent.extras.getSerializable("button") as String
 
         locationService = LocationService(this)
@@ -55,9 +48,6 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mapBoxCb.onCreate(savedInstanceState)
         mapBoxCb.getMapAsync(this)
-
-        //mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        //mapFragment.getMapAsync(this)
 
         if (choice == "return") {
             CBlocationTitle.setText(R.string.retutn_title)
@@ -70,56 +60,34 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
         val latLngYou = LatLng(myLocation.latitude, myLocation.longitude)
 
         mapBoxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-            val geoJson = GeoJsonOptions().withTolerance(0.4f)
-            val symbolManager = SymbolManager(mapBoxCb, mapBoxMap, style, null, geoJson)
-
-            style.addImage(
-                "BIKE_STATION",
-                BitmapUtils.getBitmapFromDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.ic_bike_station))!!, true)
-            //TODO: Popups for markers displaying data
 
             for(item in cityBikes) {
-
                 val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
 
-                if (item.state == "Station on" && choice == "rent") {
-                    if (item.bikesAvailable >= 1) {
-                        var symbol6 = SymbolOptions()
-                            .withLatLng(latLng)
-                            .withIconImage("BIKE_STATION")
-                            .withIconSize(1.3f)
-                            .withDraggable(false)
-
-                        symbolManager.create(symbol6)
-
-                    }
-                } else if (item.state == "Station on" && choice == "return") {
-                    if (item.spacesAvailable >= 1 || item.allowDropoff) {
-                        var symbol6 = SymbolOptions()
-                            .withLatLng(latLng)
-                            .withIconImage("BIKE_STATION")
-                            .withIconSize(1.3f)
-                            .withDraggable(false)
-
-                        symbolManager.create(symbol6)
+                if (item.state == "Station on") {
+                        if (item.bikesAvailable >= 1 && choice == "rent") {
+                            addMarkerCb(
+                                latLng,
+                                item.name,
+                                "${getString(R.string.bikes_available)} ${item.bikesAvailable}\n" +
+                                        "${distanceAdapter(item.dist)} ${getString(R.string.cb_dist)}",
+                                R.drawable.ic_bike_station
+                            )
+                        } else if (choice == "return") {
+                            if (item.spacesAvailable >= 1 || item.allowDropoff) {
+                                addMarkerCb(
+                                    latLng,
+                                    item.name,
+                                    "${getString(R.string.spaces_available)} ${item.spacesAvailable}\n" +
+                                            "${getString(R.string.cb_dropoff)}\n" +
+                                            "${distanceAdapter(item.dist)} ${getString(R.string.cb_dist)}",
+                                    R.drawable.ic_bike_station
+                            )
+                        }
                     }
                 }
             }
-
-            style.addImage(
-                "YOU",
-                BitmapUtils.getBitmapFromDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.ic_person_black_24dp))!!, true)
-
-            var symbol2 = SymbolOptions()
-                .withLatLng(latLngYou)
-                .withIconImage("YOU")
-                .withIconSize(1.3f)
-                .withDraggable(false)
-
-            symbolManager.create(symbol2)
-
+            addMarkerYou(latLngYou, getString(R.string.you), R.drawable.ic_person_black_24dp)
         }
 
         val position = CameraPosition.Builder()
@@ -127,46 +95,6 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
 
-        /*
-        googleMap = map
-
-
-        for(item in cityBikes) {
-                if (item.state == "Station on" && choice == "rent") {
-                    if (item.bikesAvailable >= 1) {
-                        val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
-                        googleMap.addMarker(
-                            MarkerOptions().position(latLng).title(item.name)
-                                .snippet("Bikes available: ${item.bikesAvailable}")
-                                .icon(
-                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
-                                )
-                        )
-                    }
-                } else if (item.state == "Station on" && choice == "return") {
-                    if (item.spacesAvailable >= 1 || item.allowDropoff) {
-                        val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
-                        googleMap.addMarker(
-                            MarkerOptions().position(latLng).title(item.name)
-                                .snippet("Spaces available: ${item.spacesAvailable} and/or drop off allowed")
-                                .icon(
-                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
-                                )
-                        )
-                    }
-                }
-        }
-        //  LatLng(60.258846, 24.846266), Leiritie 1, for placeholder until own location can be found
-        val latLng = LatLng(60.258846, 24.846266)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.0f))
-        googleMap.addMarker(
-            MarkerOptions().position(latLng).title("You")
-                .icon(
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-                )
-        )
-
-         */
     }
 
     private fun getYourLocation(){
@@ -179,5 +107,48 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
             myLocation = LatLng(lat, long)
 
         }
+    }
+
+    private fun addMarkerCb(latLng: LatLng, title: String, snippet: String, drawable: Int) {
+        mapBoxMap.addMarker(
+            MarkerOptions()
+                .position(latLng)
+                .title(title)
+                .snippet(snippet)
+                .icon(drawableToIcon(this, drawable, resources.getColor(R.color.black)))
+        )
+    }
+
+    private fun addMarkerYou(latLng: LatLng, title: String, drawable: Int) {
+        mapBoxMap.addMarker(
+            MarkerOptions()
+                .position(latLng)
+                .title(title)
+                .icon(drawableToIcon(this, drawable, resources.getColor(R.color.black)))
+        )
+    }
+
+    fun drawableToIcon(context: Context, @DrawableRes id: Int, @ColorInt colorRes: Int): Icon {
+        val vectorDrawable =
+            ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme())
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable!!.intrinsicWidth,
+            vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        DrawableCompat.setTint(vectorDrawable, colorRes)
+        vectorDrawable.draw(canvas)
+        return IconFactory.getInstance(context).fromBitmap(bitmap)
+    }
+
+    private fun distanceAdapter(distance: String) : String {
+        var dist: String
+        if(distance.toDouble() > 1000){
+            dist = "${"%.2f".format(distance.toDouble() / 1000)} km"
+        } else {
+            dist = "${(distance.toDouble()).roundToInt()} ${getString(R.string.dist_meter)}"
+        }
+        return dist
     }
 }

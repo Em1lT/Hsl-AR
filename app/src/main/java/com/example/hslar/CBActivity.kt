@@ -17,7 +17,6 @@ class CBActivity : AppCompatActivity() {
 
     lateinit var httpService: HttpService
     lateinit var locationService: LocationService
-    //var list = mutableListOf<CBStationModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +24,7 @@ class CBActivity : AppCompatActivity() {
         setContentView(R.layout.activity_cb)
 
         httpService = HttpService()
-        //locationService = LocationService(this)
+        locationService = LocationService(this)
 
         //TODO: Animations when loading markers, when button pressed.
 
@@ -74,7 +73,8 @@ class CBActivity : AppCompatActivity() {
                     item.getString("lat"),
                     item.getString("lon"),
                     item.getString("state"),
-                    item.has("allowDropoff")
+                    item.has("allowDropoff"),
+                    locationService.calculateDistance(item.getString("lat").toDouble(), item.getString("lon").toDouble()).toString()
                 )
             )
         }

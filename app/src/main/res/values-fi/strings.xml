@@ -15,11 +15,17 @@
     <string name="heading">suunta</string>
     <string name="sort">järjestele</string>
     <string name="closest">lähin</string>
-    <string name="you">sinä</string>
+    <string name="you">Sinä</string>
     <string name="hsl">Hsl</string>
     <string name="citybikes">kaupunkipyörät</string>
+    <string name="dist_meter">metriä</string>
 
     <!-- CB -->
     <string name="rent_title">Vuokraa pyörä</string>
     <string name="retutn_title">Palauta pyörä</string>
+
+    <string name="bikes_available">Pyöriä vapaana:</string>
+    <string name="spaces_available">Vapaita paikkoja:</string>
+    <string name="cb_dist">päässä</string>
+    <string name="cb_dropoff">Pyörän jättäminen sallittu</string>
 </resources>

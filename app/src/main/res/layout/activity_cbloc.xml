@@ -9,8 +9,8 @@
 
     <LinearLayout
             android:id="@+id/linearLayout5"
-            android:layout_width="217dp"
-            android:layout_height="50dp"
+            android:layout_width="222dp"
+            android:layout_height="62dp"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -21,18 +21,19 @@
 
         <TextView
                 android:id="@+id/CBlocationTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/sign"
                 android:layout_margin="5dp"
+                android:background="@drawable/sign"
+                android:gravity="center|bottom"
                 android:text="@string/rent_title"
                 android:textColor="@color/black"
-                android:textSize="30dp" />
+                android:textSize="35dp" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="359dp"
-            android:layout_height="532dp"
+            android:layout_width="380dp"
+            android:layout_height="509dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,9 +43,7 @@
         <com.mapbox.mapboxsdk.maps.MapView
                 android:id="@+id/mapBoxCb"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-        </com.mapbox.mapboxsdk.maps.MapView>
+                android:layout_height="match_parent"></com.mapbox.mapboxsdk.maps.MapView>
 
         <!--
         <fragment
