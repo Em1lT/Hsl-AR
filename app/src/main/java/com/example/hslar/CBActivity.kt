@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.widget.Button
 import com.example.hslar.Model.CBStationModel
 import com.example.hslar.Model.ScooterLocationModel
 import com.example.hslar.Model.VoiScooter
@@ -22,6 +24,7 @@ class CBActivity : AppCompatActivity() {
     lateinit var httpService: HttpService
     lateinit var httpServiceVoi: HttpServiceVoi
     lateinit var locationService: LocationService
+
     private lateinit var internalStorageService: InternalStorageService
     private lateinit var myLocation: LatLng
 
@@ -31,22 +34,30 @@ class CBActivity : AppCompatActivity() {
 
         httpService = HttpService()
         httpServiceVoi = HttpServiceVoi()
+
         locationService = LocationService(this)
-
-
-        //TODO: Animations when loading markers, when button pressed.
+        internalStorageService = InternalStorageService()
+        locationService.getLocation()
+        getYourLocation()
 
         rentButton.setOnClickListener {
+            startResponseAnimation(rentButton)
             getBikeParkId(rentButton)
         }
 
         returnButton.setOnClickListener {
+            startResponseAnimation(returnButton)
             getBikeParkId(returnButton)
         }
 
         scooterButton.setOnClickListener {
+            startResponseAnimation(scooterButton)
             getScooter(scooterButton)
         }
+    }
+
+    fun startResponseAnimation(button: Button){
+        button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
 
     fun getBikeParkId(view: View) {
@@ -111,8 +122,8 @@ class CBActivity : AppCompatActivity() {
                     locations.lat,
                     locations.lng,
                     item.getInt("battery"),
-                    item.has("locked")
-                    //locationService.calculateDistance(item.getString("lat").toDouble(), item.getString("lon").toDouble()).toString()
+                    item.has("locked"),
+                    locationService.calculateDistance(locations.lat.toDouble(), locations.lng.toDouble()).toString()
                 )
             )
         }

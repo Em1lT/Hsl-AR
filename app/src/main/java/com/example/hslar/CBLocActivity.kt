@@ -34,7 +34,6 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
     private lateinit var myLocation: LatLng
     private lateinit var locationService: LocationService
 
-
     var choice: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +49,7 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
         mapBoxCb.onCreate(savedInstanceState)
         mapBoxCb.getMapAsync(this)
 
+        locationService.getLocation()
         getYourLocation()
 
         if (choice == "return") {
@@ -104,7 +104,8 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
                         addMarker(
                             latLng,
                             "${item.name} ${getString(R.string.cs_pop_title)}",
-                            "${getString(R.string.cs_battery)} ${item.battery}%",
+                            "${getString(R.string.cs_battery)} ${item.battery}%\n" +
+                                    "${distanceAdapter(item.distance)} ${getString(R.string.cb_dist)}",
                             R.drawable.ic_city_scooter
                         )
                     }
@@ -112,7 +113,6 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
             }
             addMarkerYou(latLngYou, getString(R.string.you), R.drawable.ic_person_black_24dp)
         }
-
         val position = CameraPosition.Builder()
             .target(LatLng(latLngYou.latitude, latLngYou.longitude)).zoom(16.5).build()
 
@@ -173,3 +173,4 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
         return dist
     }
 }
+

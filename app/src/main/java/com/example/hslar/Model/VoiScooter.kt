@@ -12,5 +12,6 @@ data class VoiScooter(
     val lat: String,
     val lng: String,
     val battery: Int,
-    val locked: Boolean
+    val locked: Boolean,
+    val distance: String
 )
