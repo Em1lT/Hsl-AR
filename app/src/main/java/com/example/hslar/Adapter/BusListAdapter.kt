@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.example.hslar.Model.BusSimpleModel
+import com.example.hslar.Model.VehicleInfoSimpleModel
 import com.example.hslar.R
 
-class BusListAdapter (var mCtx: Context, var resource: Int, var items: List<BusSimpleModel>)
-    :ArrayAdapter<BusSimpleModel>(mCtx, resource, items) {
+class BusListAdapter (var mCtx: Context, var resource: Int, var items: List<VehicleInfoSimpleModel>)
+    :ArrayAdapter<VehicleInfoSimpleModel>(mCtx, resource, items) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
@@ -20,7 +20,7 @@ class BusListAdapter (var mCtx: Context, var resource: Int, var items: List<BusS
         val vehNum: TextView = view.findViewById(R.id.vehNum)
         val distanceFromStop: TextView = view.findViewById(R.id.distanceFromStop)
 
-        var mItems: BusSimpleModel = items[position]
+        var mItems: VehicleInfoSimpleModel = items[position]
 
         vehNum.text = mItems.veh
         if(mItems.dist.toInt() > 1000){

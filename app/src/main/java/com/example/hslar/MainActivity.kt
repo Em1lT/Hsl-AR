@@ -1,18 +1,15 @@
 package com.example.hslar
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.Toast
-import com.example.hslar.Fragments.BusListFragment
-import com.example.hslar.Fragments.BusRouteFragment
+import com.example.hslar.Fragments.ActiveVehicleListFragment
+import com.example.hslar.Fragments.VehicleRouteFragment
 import com.example.hslar.Fragments.StopListFragment
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
@@ -29,11 +26,11 @@ import org.json.JSONObject
  * Every step has it's own activity/fragment
  * First we get the route id with current activity. We also get the current location with googleFusedLocations API
  * Then on the function getId() we get the information about the route. We call hsl api with HTTPService.
- * Finally we pass the data BusRouteFragment
+ * Finally we pass the data VehicleRouteFragment
  */
 
-//TODO: Create strings values for all the texts
-//TODO: Create detailed comments for every class
+//TODO: REAL TIME FOR STOPS
+//TODO: STEPS
 
 class MainActivity : AppCompatActivity() {
 
@@ -84,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 val routes = JSONArray(dataRoute.getString("routes"))
 
                 if (routes.length() > 0) {
-                    startFragment(BusRouteFragment(routes))
+                    startFragment(VehicleRouteFragment(routes))
                 }
             } else {
                 Toast.makeText(this, "no route for this number", Toast.LENGTH_SHORT).show()
@@ -102,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     fun callbackFromStop(routeModel: RouteModel, stopModel: StopModel) {
         startFragment(
-            BusListFragment(
+            ActiveVehicleListFragment(
                 routeModel, stopModel
             )
         )

@@ -4,21 +4,20 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import com.example.hslar.Adapter.BusListAdapter
-import com.example.hslar.Model.BusSimpleModel
+import com.example.hslar.Model.VehicleInfoSimpleModel
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.R
 import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
 import com.example.hslar.Services.MqttServiceCaller
-import com.example.hslar.SingleBusDetailActivity
+import com.example.hslar.VehicleRealTimeDetailActivity
 import com.example.hslpoc.Observer
 import kotlinx.android.synthetic.main.fragment_bus_list.*
 import kotlinx.android.synthetic.main.fragment_bus_list.view.*
@@ -37,7 +36,8 @@ import kotlin.concurrent.timerTask
  */
 
 @SuppressLint("ValidFragment")
-class BusListFragment(private val routeModel: RouteModel, private val stopModel: StopModel) : Fragment(), Observer {
+class ActiveVehicleListFragment(private val routeModel: RouteModel, private val stopModel: StopModel) : Fragment(),
+    Observer {
 
     private lateinit var adapter: BusListAdapter
     private lateinit var adapter1: BusListAdapter
@@ -46,8 +46,8 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
     private lateinit var locationService: LocationService
 
     private var topic = "/hfp/v2/journey/ongoing/vp/+/+/+/${routeModel.gtfsId.substringAfter(":")}/+/+/+/+/+/#"
-    private var listDirection = mutableListOf<BusSimpleModel>()
-    private var listOtherDirection = mutableListOf<BusSimpleModel>()
+    private var listDirection = mutableListOf<VehicleInfoSimpleModel>()
+    private var listOtherDirection = mutableListOf<VehicleInfoSimpleModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,7 +93,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
             sortByDistance()
         }
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
-            val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
+            val intent = Intent(this.context, VehicleRealTimeDetailActivity::class.java).apply {
                 putExtra("bus", adapter.getItem(i))
                 putExtra("stop", stopModel)
                 putExtra("EndLine", secondEndingStop)
@@ -103,7 +103,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
             startActivity(intent)
         }
         view.bussesListOther.setOnItemClickListener { _, _, i, _ ->
-            val intent = Intent(this.context, SingleBusDetailActivity::class.java).apply {
+            val intent = Intent(this.context, VehicleRealTimeDetailActivity::class.java).apply {
                 putExtra("bus", adapter1.getItem(i))
                 putExtra("stop", stopModel)
                 putExtra("EndLine", firstEndingStop)
@@ -126,7 +126,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
         if (message.has("VP")) {
             val data = JSONObject(message.getString("VP"))
             val dir = data.getString("dir")
-            val newBus = BusSimpleModel(
+            val newBus = VehicleInfoSimpleModel(
                 data.getString("veh"),
                 data.getString("route"),
                 data.getString("desi"),
@@ -142,6 +142,9 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                 }
                 for ((i, item) in listDirection.withIndex()) {
                     if (item.veh == data.getString(("veh"))) {
+                        if (newBus.lat == "null" || newBus.longi == "null") {
+                            return
+                        }
                         listDirection[i] = newBus
                         return
                     }
@@ -154,6 +157,9 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
                 }
                 for ((i, item) in listOtherDirection.withIndex()) {
                     if (item.veh == data.getString(("veh"))) {
+                        if (newBus.lat == "null" || newBus.longi == "null") {
+                            return
+                        }
                         listOtherDirection[i] = newBus
                         return
                     }
@@ -166,8 +172,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
 
     }
 
-    private fun unsubsribe() {
-        Log.d("Main", "unsubscribe")
+    private fun unsubscribe() {
         mqttService.unsubscribe(topic)
         //TODO: mqttService disconnect from the client(When trying to disconnect it crashes)
         //mqttService.disconnect()
@@ -176,7 +181,7 @@ class BusListFragment(private val routeModel: RouteModel, private val stopModel:
     private fun unSubsribeWithDelay() {
         Thread(Runnable {
             Timer().schedule(timerTask {
-                unsubsribe()
+                unsubscribe()
 
                 calcDistanceForAll()
             }, 6000)

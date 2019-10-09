@@ -4,7 +4,7 @@
     <string name="chooseLine">Valitse linja</string>
     <string name="busline">linjan numero</string>
     <string name="check">hae</string>
-    <string name="bus">bussi</string>
+    <string name="vehicleInfo">bussi</string>
     <string name="speed">nopeus</string>
     <string name="lat">lat</string>
     <string name="longi">long</string>
@@ -25,4 +25,7 @@
     <string name="rent_title">Vuokraa pyörä</string>
     <string name="retutn_title">Palauta pyörä</string>
     <string name="distance">Etäisyys pysäkiltä</string>
+    <string name="doorClose">Ovet kiinni</string>
+    <string name="doorOpen">Ovet auki</string>
+    <string name="serviceNoti">Huomautukset</string>
 </resources>

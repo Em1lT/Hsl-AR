@@ -30,5 +30,13 @@
                 android:layout_marginLeft="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="100dp" android:text="@string/citybikes"/>
+        <Button
+                android:id="@+id/bNotific"
+                android:background="@drawable/check_button"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" android:text="survey advise"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

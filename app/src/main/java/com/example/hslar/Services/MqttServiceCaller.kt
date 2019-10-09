@@ -4,8 +4,8 @@ import android.content.Context
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.widget.Toast
-import com.example.hslar.Fragments.BusListFragment
-import com.example.hslar.SingleBusDetailActivity
+import com.example.hslar.Fragments.ActiveVehicleListFragment
+import com.example.hslar.VehicleRealTimeDetailActivity
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.json.JSONObject
@@ -18,8 +18,8 @@ import org.json.JSONObject
 class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
 
     val TAG = "Main"
-    private val observers = mutableSetOf<BusListFragment>()
-    private val observers1 = mutableSetOf<SingleBusDetailActivity>()
+    private val observers = mutableSetOf<ActiveVehicleListFragment>()
+    private val observers1 = mutableSetOf<VehicleRealTimeDetailActivity>()
     private val clientId: String = MqttClient.generateClientId()
     private var client = MqttAndroidClient(context, "tcp://mqtt.hsl.fi:1883", clientId)
     var connection: Boolean = false
@@ -71,12 +71,14 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
 
     //disconnect from the service. if you are not subscribed service will disconnect after some time. also a listner for the result
     fun disconnect() {
+        Log.d(TAG, "client disconnected try")
         try {
             val disconToken = client.disconnect()
             disconToken.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // we are now successfully disconnected
                     Log.d(TAG, "client disconnected")
+                    client.close()
                 }
 
                 override fun onFailure(
@@ -88,6 +90,7 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
                 }
             }
         } catch (e: MqttException) {
+            Log.d(TAG, "faile")
             e.printStackTrace()
         }
 
@@ -161,7 +164,7 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
 
     }
 
-    fun registerObserverFragment(observer: BusListFragment) {
+    fun registerObserverFragment(observer: ActiveVehicleListFragment) {
         observers.add(observer)
     }
 
@@ -169,11 +172,11 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
         observers.remove(observer)
     }
 
-    fun registerObserverActivity(observer: SingleBusDetailActivity) {
+    fun registerObserverActivity(observer: VehicleRealTimeDetailActivity) {
         observers1.add(observer)
     }
 
-    fun deRegisterObserverActivity(observer: SingleBusDetailActivity) {
+    fun deRegisterObserverActivity(observer: VehicleRealTimeDetailActivity) {
         observers1.remove(observer)
     }
 }

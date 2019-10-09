@@ -54,6 +54,9 @@ class StartActivity : AppCompatActivity() {
         cityBikes.setOnClickListener {
             startActivity(CBActivity())
         }
+        bNotific.setOnClickListener {
+            startActivity(AdviseNotificationActivity())
+        }
     }
 
     private fun startActivity(activity: Activity){

@@ -3,7 +3,7 @@
     <string name="chooseLine">choose line</string>
     <string name="busline">line number</string>
     <string name="check">check</string>
-    <string name="bus">bus</string>
+    <string name="vehicleInfo">vehicleInfo</string>
     <string name="speed">speed</string>
     <string name="lat">lat</string>
     <string name="longi">longi</string>
@@ -29,5 +29,6 @@
     <string name="detailed">Detailed</string>
     <string name="doorClose">Doors are closed</string>
     <string name="doorOpen">Doors are open</string>
+    <string name="serviceNoti">Service Notifications</string>
 
 </resources>

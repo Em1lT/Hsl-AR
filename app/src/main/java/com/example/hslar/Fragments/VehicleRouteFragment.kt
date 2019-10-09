@@ -22,7 +22,7 @@ import org.json.JSONArray
  *
  */
 @SuppressLint("ValidFragment")
-class BusRouteFragment(private val busRoute: JSONArray) : Fragment() {
+class VehicleRouteFragment(private val busRoute: JSONArray) : Fragment() {
 
     var list = mutableListOf<RouteModel>()
     private lateinit var adapter: BusRouteListAdapter
