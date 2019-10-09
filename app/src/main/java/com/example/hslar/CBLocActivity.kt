@@ -21,17 +21,19 @@ import android.graphics.Canvas
 import android.support.v4.content.res.ResourcesCompat
 import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
+import android.util.Log
 import com.mapbox.mapboxsdk.annotations.Icon
 import kotlin.math.roundToInt
 
 
-class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
+class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
 
-    private lateinit var locationService: LocationService
     private lateinit var internalStorageService: InternalStorageService
 
     private lateinit var mapBoxMap: MapboxMap
     private lateinit var myLocation: LatLng
+    private lateinit var locationService: LocationService
+
 
     var choice: String = ""
 
@@ -44,29 +46,37 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
 
         locationService = LocationService(this)
         internalStorageService = InternalStorageService()
-        getYourLocation()
 
         mapBoxCb.onCreate(savedInstanceState)
         mapBoxCb.getMapAsync(this)
 
+        getYourLocation()
+
         if (choice == "return") {
             CBlocationTitle.setText(R.string.retutn_title)
+        } else if (choice == "scooter") {
+            CBlocationTitle.setText(R.string.scooter_title)
+        } else {
+            //Do nothing
         }
     }
 
     override fun onMapReady(map: MapboxMap) {
         mapBoxMap = map
         val cityBikes = CbList.cbList
+        val scooters = CbList.scooterList
+        Log.d("STAR", scooters.toString())
         val latLngYou = LatLng(myLocation.latitude, myLocation.longitude)
 
         mapBoxMap.setStyle(Style.MAPBOX_STREETS) { style ->
 
-            for(item in cityBikes) {
-                val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
+            if (choice == "rent" || choice == "return") {
+                for (item in cityBikes) {
+                    val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
 
-                if (item.state == "Station on") {
+                    if (item.state == "Station on") {
                         if (item.bikesAvailable >= 1 && choice == "rent") {
-                            addMarkerCb(
+                            addMarker(
                                 latLng,
                                 item.name,
                                 "${getString(R.string.bikes_available)} ${item.bikesAvailable}\n" +
@@ -75,15 +85,28 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
                             )
                         } else if (choice == "return") {
                             if (item.spacesAvailable >= 1 || item.allowDropoff) {
-                                addMarkerCb(
+                                addMarker(
                                     latLng,
                                     item.name,
                                     "${getString(R.string.spaces_available)} ${item.spacesAvailable}\n" +
                                             "${getString(R.string.cb_dropoff)}\n" +
                                             "${distanceAdapter(item.dist)} ${getString(R.string.cb_dist)}",
                                     R.drawable.ic_bike_station
-                            )
+                                )
+                            }
                         }
+                    }
+                }
+            } else if (choice == "scooter") {
+                for(item in scooters) {
+                    if (item.status == "ready" && item.battery > 49) {
+                        val latLng = LatLng(item.lat.toDouble(), item.lng.toDouble())
+                        addMarker(
+                            latLng,
+                            "${item.name} ${getString(R.string.cs_pop_title)}",
+                            "${getString(R.string.cs_battery)} ${item.battery}%",
+                            R.drawable.ic_city_scooter
+                        )
                     }
                 }
             }
@@ -94,7 +117,6 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
             .target(LatLng(latLngYou.latitude, latLngYou.longitude)).zoom(16.5).build()
 
         mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
-
     }
 
     private fun getYourLocation(){
@@ -105,11 +127,10 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback {
             lat = data!!.substringBefore(":").toDouble()
             long = data.substringAfter(":").toDouble()
             myLocation = LatLng(lat, long)
-
         }
     }
 
-    private fun addMarkerCb(latLng: LatLng, title: String, snippet: String, drawable: Int) {
+    private fun addMarker(latLng: LatLng, title: String, snippet: String, drawable: Int) {
         mapBoxMap.addMarker(
             MarkerOptions()
                 .position(latLng)

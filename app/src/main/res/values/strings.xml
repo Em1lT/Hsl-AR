@@ -20,6 +20,7 @@
 
     <string name="rent_title">Rent a bike</string>
     <string name="retutn_title">Return a bike</string>
+    <string name="scooter_title">Find a scooter</string>
 
     <string name="access_token" translatable="false"></string>
     <string name="citybikes">CityBikes</string>
@@ -28,5 +29,9 @@
     <string name="spaces_available">Spaces available:</string>
     <string name="cb_dist">away</string>
     <string name="cb_dropoff">Drop off allowed if no space</string>
+    <string name="ride_title">Find a ride</string>
+    <string name="cs_button">Find a scooter</string>
+    <string name="cs_pop_title">City Scooter</string>
+    <string name="cs_battery">Battery left:</string>
 
 </resources>

@@ -9,15 +9,14 @@
 
     <LinearLayout
             android:id="@+id/linearLayout5"
-            android:layout_width="222dp"
-            android:layout_height="62dp"
+            android:layout_width="289dp"
+            android:layout_height="66dp"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.06">
+            app:layout_constraintVertical_bias="0.046">
 
         <TextView
                 android:id="@+id/CBlocationTitle"
@@ -32,8 +31,8 @@
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="380dp"
-            android:layout_height="509dp"
+            android:layout_width="394dp"
+            android:layout_height="608dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

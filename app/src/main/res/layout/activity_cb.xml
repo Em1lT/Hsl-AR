@@ -7,67 +7,104 @@
         android:background="@drawable/background"
         tools:context=".CBActivity">
 
+
     <LinearLayout
             android:id="@+id/linearLayout4"
-            android:layout_width="243dp"
-            android:layout_height="53dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="268dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="50dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.465"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.070">
+            app:layout_constraintTop_toTopOf="parent">
 
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/sign"
                 android:gravity="center|bottom"
-                android:text="Citybike finder"
+                android:text="@string/ride_title"
                 android:textColor="@color/black"
                 android:textSize="35dp" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="286dp"
-            android:layout_height="308dp"
+            android:id="@+id/linearLayout6"
+            android:layout_width="380dp"
+            android:layout_height="172dp"
+            android:layout_marginTop="50dp"
+            android:background="@color/md_grey_500"
+            android:gravity="center"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
-            app:layout_constraintVertical_bias="0.255">
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
-        <Button
-                android:id="@+id/rentButton"
+        <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:layout_margin="3dp"
-                android:background="@drawable/check_button"
-                android:text="@string/rent_title"
-                android:textColor="@color/black"
-                android:textSize="28dp" />
+                android:layout_height="100dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/cbworks" />
 
-        <Button
-                android:id="@+id/returnButton"
+        <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:layout_margin="3dp"
-                android:background="@drawable/check_button"
-                android:text="@string/retutn_title"
-                android:textColor="@color/black"
-                android:textSize="28dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
+            <Button
+                    android:id="@+id/rentButton"
+                    android:layout_width="178dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/check_button"
+                    android:text="@string/rent_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
 
+            <Button
+                    android:id="@+id/returnButton"
+                    android:layout_width="178dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/check_button"
+                    android:text="@string/retutn_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
+            android:layout_width="380dp"
+            android:layout_marginTop="25dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="120dp"
+            android:background="@color/md_grey_500"
             android:gravity="center"
-            android:id="@+id/cbFragmentContainer"
-            android:layout_weight="4"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.516"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout6">
+
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="210dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/voi_how2" />
+
+
+        <Button
+                android:id="@+id/scooterButton"
+                android:layout_width="356dp"
+                android:layout_height="53dp"
+                android:layout_margin="4dp"
+                android:background="@drawable/check_button"
+                android:text="@string/cs_button"
+                android:textColor="@color/black"
+                android:textSize="12dp" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
