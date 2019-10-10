@@ -46,7 +46,6 @@ class StartActivity : AppCompatActivity() {
             getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
 
-
         hsl.setOnClickListener {
            startActivity(MainActivity())
         }

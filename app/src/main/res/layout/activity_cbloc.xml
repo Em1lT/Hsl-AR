@@ -6,44 +6,51 @@
         android:layout_height="match_parent"
         android:background="@drawable/background"
         tools:context=".CBLocActivity">
-
+<!--
     <LinearLayout
             android:id="@+id/linearLayout5"
-            android:layout_width="217dp"
-            android:layout_height="50dp"
+            android:layout_width="289dp"
+            android:layout_height="66dp"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.06">
+            app:layout_constraintVertical_bias="0.046">
 
         <TextView
                 android:id="@+id/CBlocationTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/sign"
                 android:layout_margin="5dp"
+                android:background="@drawable/sign"
+                android:gravity="center|bottom"
                 android:text="@string/rent_title"
                 android:textColor="@color/black"
-                android:textSize="30dp" />
+                android:textSize="35dp" />
     </LinearLayout>
+    -->
 
     <LinearLayout
-            android:layout_width="359dp"
-            android:layout_height="532dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
             app:layout_constraintVertical_bias="0.504">
 
+        <com.mapbox.mapboxsdk.maps.MapView
+                android:id="@+id/mapBoxCb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></com.mapbox.mapboxsdk.maps.MapView>
+
+        <!--
         <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></fragment>
+                android:layout_height="match_parent"/>
+                -->
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

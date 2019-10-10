@@ -15,11 +15,12 @@
     <string name="heading">suunta</string>
     <string name="sort">järjestele</string>
     <string name="closest">lähin</string>
-    <string name="you">sinä</string>
+    <string name="you">Sinä</string>
     <string name="hsl">Hsl</string>
     <string name="citybikes">kaupunkipyörät</string>
     <string name="simple">Helppo</string>
     <string name="detailed">Yksityiskohtainen</string>
+    <string name="dist_meter">metriä</string>
 
     <!-- CB -->
     <string name="rent_title">Vuokraa pyörä</string>
@@ -28,4 +29,14 @@
     <string name="doorClose">Ovet kiinni</string>
     <string name="doorOpen">Ovet auki</string>
     <string name="serviceNoti">Huomautukset</string>
+    <string name="scooter_title">Löydä potkulauta</string>
+
+    <string name="bikes_available">Pyöriä vapaana:</string>
+    <string name="spaces_available">Vapaita paikkoja:</string>
+    <string name="cb_dist">päässä</string>
+    <string name="cb_dropoff">Pyörän jättäminen sallittu</string>
+    <string name="ride_title">Löydä menopeli</string>
+    <string name="cs_button">Löydä potkulauta</string>
+    <string name="cs_pop_title">Sähköpotkulauta</string>
+    <string name="cs_battery">Akun lataus:</string>
 </resources>
