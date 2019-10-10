@@ -26,7 +26,7 @@ Run the app
 
 ## Links
 
-https://www.hsl.fi/avoindata
-https://digitransit.fi/en/developers/apis/4-realtime-api/
-https://digitransit.fi/en/developers/apis/1-routing-api/0-graphql/
-https://www.mapbox.com/
++https://www.hsl.fi/avoindata
++https://digitransit.fi/en/developers/apis/4-realtime-api/
++https://digitransit.fi/en/developers/apis/1-routing-api/0-graphql/
++https://www.mapbox.com/
