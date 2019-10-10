@@ -21,10 +21,9 @@ import org.json.JSONObject
 
 class CBActivity : AppCompatActivity() {
 
-    lateinit var httpService: HttpService
-    lateinit var httpServiceVoi: HttpServiceVoi
-    lateinit var locationService: LocationService
-
+    private lateinit var httpService: HttpService
+    private lateinit var httpServiceVoi: HttpServiceVoi
+    private lateinit var locationService: LocationService
     private lateinit var internalStorageService: InternalStorageService
     private lateinit var myLocation: LatLng
 
@@ -35,10 +34,12 @@ class CBActivity : AppCompatActivity() {
         httpService = HttpService()
         httpServiceVoi = HttpServiceVoi()
 
-        locationService = LocationService(this)
         internalStorageService = InternalStorageService()
+        locationService = LocationService(this)
+
+        // Refreshes location.txt file to get current location.
         locationService.getLocation()
-        getYourLocation()
+        myLocation = LatLng(locationService.getYourLocation())
 
         rentButton.setOnClickListener {
             startResponseAnimation(rentButton)
@@ -56,44 +57,50 @@ class CBActivity : AppCompatActivity() {
         }
     }
 
-    fun startResponseAnimation(button: Button){
+    // Starts an animation when button is pressed
+    private fun startResponseAnimation(button: Button){
         button.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_response))
     }
 
-    fun getBikeParkId(view: View) {
-        var json = JSONObject()
+    // Sends a http post request with a QraphiQL quary to receive json data string of hsl city
+    // bikes and reforms it to json array.
+    private fun getBikeParkId(view: View) {
+        val json = JSONObject()
         json.put(
             "query",
             "{bikeRentalStations{id stationId lon lat name spacesAvailable bikesAvailable state}}"
         )
         val res = httpService.postRequest(json)
-        var data = JSONObject(res)
+        val data = JSONObject(res)
 
         if (data.has("data")) {
-            var dataCityBike = JSONObject(data.getString("data"))
+            val dataCityBike = JSONObject(data.getString("data"))
             if (JSONArray(dataCityBike.getString("bikeRentalStations")).length() > 0) {
-                var brStations = JSONArray(dataCityBike.getString("bikeRentalStations"))
+                val brStations = JSONArray(dataCityBike.getString("bikeRentalStations"))
 
                 createList(brStations, view)
             }
         }
     }
 
-    fun getScooter(view: View) {
-        var json = JSONObject()
+    // Sends a http get request to get json data string of all the scooters in the helsinki area
+    // and parses the json. Values are added from json file to list of ScooterLocationModels and
+    // to a json array for VoiScooter list creation.
+    private fun getScooter(view: View) {
+        val json = JSONObject()
         val res = httpServiceVoi.getRequest()
-        var jsonArray = JSONArray(res)
+        val jsonArray = JSONArray(res)
 
         json.put("scooters", jsonArray)
-        var jsonA = json.getJSONArray("scooters")
+        val jsonA = json.getJSONArray("scooters")
 
         for (i in 0 until jsonA.length()) {
-            var jsonO = jsonA.getJSONObject(i)
-            var jsonAr = jsonO.getJSONArray("location")
+            val jsonO = jsonA.getJSONObject(i)
+            val jsonAr = jsonO.getJSONArray("location")
 
             for (j in 0 until jsonAr.length()) {
-                var item1 = jsonAr.getString(0)
-                var item2 = jsonAr.getString(1)
+                val item1 = jsonAr.getString(0)
+                val item2 = jsonAr.getString(1)
                 CbList.scooterLocationList.add(
                     ScooterLocationModel(
                         item1,
@@ -105,11 +112,12 @@ class CBActivity : AppCompatActivity() {
         createScooterList(jsonArray, view)
     }
 
-    fun createScooterList(scooters: JSONArray, view: View) {
+    // Creates a list of VoiScooters from the json array and adds the locations from the scooter
+    // location list. Starts the map activity when list is done.
+    private fun createScooterList(scooters: JSONArray, view: View) {
         for (i in 0 until scooters.length()) {
             val item = scooters.getJSONObject(i)
-            var locations = CbList.scooterLocationList[i]
-            //TODO: CALCULATES THE DISTANCE BETWEEN
+            val locations = CbList.scooterLocationList[i]
             CbList.scooterList.add(
                 VoiScooter(
                     item.getString("id"),
@@ -135,7 +143,8 @@ class CBActivity : AppCompatActivity() {
         }
     }
 
-    fun createList(bikeRentals: JSONArray, view: View) {
+    // Creates a list of CBStationModels from the json array response and starts next activity.
+    private fun createList(bikeRentals: JSONArray, view: View) {
         for (i in 0 until bikeRentals.length()) {
             val item = bikeRentals.getJSONObject(i)
             CbList.cbList.add(
@@ -148,7 +157,7 @@ class CBActivity : AppCompatActivity() {
                     item.getString("lat"),
                     item.getString("lon"),
                     item.getString("state"),
-                    item.has("allowDropoff"),
+                    item.has("allowDrop"),
                     locationService.calculateDistance(item.getString("lat").toDouble(), item.getString("lon").toDouble()).toString()
                 )
             )
@@ -165,20 +174,9 @@ class CBActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
-    private fun getYourLocation(){
-        var data = internalStorageService.readOnFile(this,"location.txt")
-        var lat: Double
-        var long: Double
-        if(data!!.isNotEmpty()) {
-            lat = data!!.substringBefore(":").toDouble()
-            long = data.substringAfter(":").toDouble()
-            myLocation = LatLng(lat, long)
-        }
-    }
 }
 
-// Singleton object for list of different models
+// Singleton object for list of different models.
 object CbList {
     var cbList = mutableListOf<CBStationModel>()
     var scooterList = mutableListOf<VoiScooter>()

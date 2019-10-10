@@ -9,6 +9,6 @@ data class CBStationModel(
     val lat: String,
     val lon: String,
     val state: String,
-    val allowDropoff: Boolean,
+    val allowDrop: Boolean,
     val dist: String
 )

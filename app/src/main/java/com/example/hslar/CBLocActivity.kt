@@ -21,7 +21,6 @@ import android.graphics.Canvas
 import android.support.v4.content.res.ResourcesCompat
 import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
-import android.util.Log
 import com.mapbox.mapboxsdk.annotations.Icon
 import kotlin.math.roundToInt
 
@@ -34,14 +33,14 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
     private lateinit var myLocation: LatLng
     private lateinit var locationService: LocationService
 
-    var choice: String = ""
+    private var choice: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.access_token))
         setContentView(R.layout.activity_cbloc)
 
-        choice = intent.extras.getSerializable("button") as String
+        choice = intent?.extras?.getSerializable("button") as String
 
         locationService = LocationService(this)
         internalStorageService = InternalStorageService()
@@ -49,31 +48,29 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
         mapBoxCb.onCreate(savedInstanceState)
         mapBoxCb.getMapAsync(this)
 
+        // Refreshes location.txt file to get current location.
         locationService.getLocation()
-        getYourLocation()
+        myLocation = LatLng(locationService.getYourLocation())
 
-        if (choice == "return") {
-            CBlocationTitle.setText(R.string.retutn_title)
-        } else if (choice == "scooter") {
-            CBlocationTitle.setText(R.string.scooter_title)
-        } else {
-            //Do nothing
-        }
     }
 
+    // Creates the mapboxmap and sets its style and markers.
     override fun onMapReady(map: MapboxMap) {
         mapBoxMap = map
+
         val cityBikes = CbList.cbList
         val scooters = CbList.scooterList
-        Log.d("STAR", scooters.toString())
+
         val latLngYou = LatLng(myLocation.latitude, myLocation.longitude)
 
-        mapBoxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+        mapBoxMap.setStyle(Style.MAPBOX_STREETS) {
 
+            // Adds markers depending on users choice.
             if (choice == "rent" || choice == "return") {
                 for (item in cityBikes) {
                     val latLng = LatLng(item.lat.toDouble(), item.lon.toDouble())
 
+                    // Adds only bike stations that have 1 or more free bikes to use.
                     if (item.state == "Station on") {
                         if (item.bikesAvailable >= 1 && choice == "rent") {
                             addMarker(
@@ -84,7 +81,8 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
                                 R.drawable.ic_bike_station
                             )
                         } else if (choice == "return") {
-                            if (item.spacesAvailable >= 1 || item.allowDropoff) {
+                            // Adds only bike stations that have 1 or more free spaces, or have allowed drop off.
+                            if (item.spacesAvailable >= 1 || item.allowDrop) {
                                 addMarker(
                                     latLng,
                                     item.name,
@@ -99,6 +97,7 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
                 }
             } else if (choice == "scooter") {
                 for(item in scooters) {
+                    // Adds only Voi scooters that are not being ridden and have more than 50% battery left.
                     if (item.status == "ready" && item.battery > 49) {
                         val latLng = LatLng(item.lat.toDouble(), item.lng.toDouble())
                         addMarker(
@@ -111,25 +110,15 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
                     }
                 }
             }
-            addMarkerYou(latLngYou, getString(R.string.you), R.drawable.ic_person_black_24dp)
+            addMarkerYou(latLngYou, getString(R.string.you))
         }
         val position = CameraPosition.Builder()
-            .target(LatLng(latLngYou.latitude, latLngYou.longitude)).zoom(16.5).build()
+            .target(LatLng(latLngYou.latitude, latLngYou.longitude)).zoom(17.0).build()
 
-        mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000)
+        mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 5000)
     }
 
-    private fun getYourLocation(){
-        var data = internalStorageService.readOnFile(this,"location.txt")
-        var lat: Double
-        var long: Double
-        if(data!!.isNotEmpty()) {
-            lat = data!!.substringBefore(":").toDouble()
-            long = data.substringAfter(":").toDouble()
-            myLocation = LatLng(lat, long)
-        }
-    }
-
+    // Adds a marker with a snippet to mapboxmap.
     private fun addMarker(latLng: LatLng, title: String, snippet: String, drawable: Int) {
         mapBoxMap.addMarker(
             MarkerOptions()
@@ -140,31 +129,34 @@ class CBLocActivity : AppCompatActivity(), OnMapReadyCallback{
         )
     }
 
-    private fun addMarkerYou(latLng: LatLng, title: String, drawable: Int) {
+    // Adds a marker with out a snippet and set icon for device location.
+    private fun addMarkerYou(latLng: LatLng, title: String) {
         mapBoxMap.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .title(title)
-                .icon(drawableToIcon(this, drawable, resources.getColor(R.color.black)))
+                .icon(drawableToIcon(this, R.drawable.ic_person_black_24dp, resources.getColor(R.color.black)))
         )
     }
 
-    fun drawableToIcon(context: Context, @DrawableRes id: Int, @ColorInt colorRes: Int): Icon {
+    // Transforms a drawable object to an icon that can be used on mapboxmap as a marker.
+    private fun drawableToIcon(context: Context, @DrawableRes id: Int, @ColorInt colorRes: Int): Icon {
         val vectorDrawable =
-            ResourcesCompat.getDrawable(context.getResources(), id, context.getTheme())
+            ResourcesCompat.getDrawable(context.resources, id, context.theme)
         val bitmap = Bitmap.createBitmap(
             vectorDrawable!!.intrinsicWidth,
             vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
         DrawableCompat.setTint(vectorDrawable, colorRes)
         vectorDrawable.draw(canvas)
         return IconFactory.getInstance(context).fromBitmap(bitmap)
     }
 
+    // Formats the distance float depending is it over 1000 or not.
     private fun distanceAdapter(distance: String) : String {
-        var dist: String
+        val dist: String
         if(distance.toDouble() > 1000){
             dist = "${"%.2f".format(distance.toDouble() / 1000)} km"
         } else {
