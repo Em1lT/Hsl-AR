@@ -18,7 +18,7 @@ import com.example.hslar.Model.VehicleInfoDetailModel
 import com.example.hslar.Model.VehicleInfoSimpleModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.Observer.OnButtonClick
-import com.example.hslar.PopUp.NotificationPopUp
+import com.example.hslar.DialogFragment.NotificationDialogFragment
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
@@ -168,7 +168,7 @@ class VehicleRealTimeDetailActivity : AppCompatActivity(), Observer, OnButtonCli
         }
         bNotification.setOnClickListener {
             if (!notificationSet) {
-                val dial = NotificationPopUp(vehicleInfo.dist.toInt())
+                val dial = NotificationDialogFragment(vehicleInfo.dist.toInt())
                 dial.show(supportFragmentManager, "Notification_popup")
             } else {
                 Toast.makeText(this, "Notification already set", Toast.LENGTH_LONG).show()

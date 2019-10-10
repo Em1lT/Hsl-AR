@@ -1,4 +1,4 @@
-package com.example.hslar.PopUp
+package com.example.hslar.DialogFragment
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface

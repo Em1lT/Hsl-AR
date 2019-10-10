@@ -1,4 +1,4 @@
-package com.example.hslar.PopUp
+package com.example.hslar.DialogFragment
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ import kotlinx.android.synthetic.main.notification_pop_up.view.*
  */
 
 @SuppressLint("ValidFragment")
-class NotificationPopUp(val dist: Int) : DialogFragment(){
+class NotificationDialogFragment(val dist: Int) : DialogFragment(){
 
     private var notificationDistance = 100
     var listener: OnButtonClick? = null

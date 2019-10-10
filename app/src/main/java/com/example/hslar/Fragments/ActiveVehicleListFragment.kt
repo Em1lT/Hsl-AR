@@ -4,16 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import com.example.hslar.Adapter.BusListAdapter
+import com.example.hslar.DialogFragment.VehicleStopsDialogFragment
 import com.example.hslar.Model.VehicleInfoSimpleModel
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
 import com.example.hslar.R
+import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.InternalStorageService
 import com.example.hslar.Services.LocationService
 import com.example.hslar.Services.MqttServiceCaller
@@ -54,6 +57,7 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
         savedInstanceState: Bundle?
     ): View? {
 
+
         mqttService = MqttServiceCaller(this.requireContext(), topic)
         mqttService.registerObserverFragment(this)
         internalStorageService = InternalStorageService()
@@ -92,9 +96,21 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
             startResponseAnimation(view.sortByClosest)
             sortByDistance()
         }
+        view.bussesList.setOnItemLongClickListener { _, _, i, _ ->
+
+                val dial = VehicleStopsDialogFragment(adapter.getItem(i))
+                dial.show(fragmentManager, "VehicleStopsDialogFragment")
+            true
+        }
+
+        view.bussesListOther.setOnItemLongClickListener { _, _, i, _ ->
+            val dial = VehicleStopsDialogFragment(adapter.getItem(i))
+            dial.show(fragmentManager, "VehicleStopsDialogFragment")
+            true
+        }
         view.bussesList.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, VehicleRealTimeDetailActivity::class.java).apply {
-                putExtra("bus", adapter.getItem(i))
+                putExtra("vehicleInfo", adapter.getItem(i))
                 putExtra("stop", stopModel)
                 putExtra("EndLine", secondEndingStop)
             }
@@ -104,7 +120,7 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
         }
         view.bussesListOther.setOnItemClickListener { _, _, i, _ ->
             val intent = Intent(this.context, VehicleRealTimeDetailActivity::class.java).apply {
-                putExtra("bus", adapter1.getItem(i))
+                putExtra("vehicleInfo", adapter1.getItem(i))
                 putExtra("stop", stopModel)
                 putExtra("EndLine", firstEndingStop)
 
@@ -132,7 +148,10 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
                 data.getString("desi"),
                 data.getString("lat"),
                 data.getString("long"),
-                "0"
+                "0",
+                data.getString("oday"),
+                data.getString("start"),
+                data.getString("dir")
             )
 
             if (dir == "1") {
@@ -141,6 +160,8 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
 
                 }
                 for ((i, item) in listDirection.withIndex()) {
+
+
                     if (item.veh == data.getString(("veh"))) {
                         if (newBus.lat == "null" || newBus.longi == "null") {
                             return
@@ -213,6 +234,8 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
     }
 
     private fun calcDistanceForAll() {
+
+        var direction = 0
 
         for (item in listDirection) {
 

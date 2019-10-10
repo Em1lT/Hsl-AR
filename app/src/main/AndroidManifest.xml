@@ -45,10 +45,6 @@
 
         <service android:name="org.eclipse.paho.android.service.MqttService">
         </service>
-        <service
-                android:name=".Services.BgNotificationService"
-                android:exported="false">
-        </service>
 
         <uses-library
                 android:name="org.apache.http.legacy"

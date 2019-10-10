@@ -14,7 +14,7 @@ import com.example.hslar.Adapter.StopListAdapter
 import com.example.hslar.MainActivity
 import com.example.hslar.Model.RouteModel
 import com.example.hslar.Model.StopModel
-import com.example.hslar.PopUp.DialogPopup
+import com.example.hslar.DialogFragment.DialogPopup
 import com.example.hslar.R
 import com.example.hslar.Services.HttpService
 import com.example.hslar.Services.LocationService

@@ -21,7 +21,6 @@
                 android:layout_marginBottom="15dp"
                 android:layout_height="100dp" android:text="@string/hsl"/>
 
-
         <Button
                 android:id="@+id/cityBikes"
                 android:background="@drawable/check_button"
