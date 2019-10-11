@@ -104,7 +104,7 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
         }
 
         view.bussesListOther.setOnItemLongClickListener { _, _, i, _ ->
-            val dial = VehicleStopsDialogFragment(adapter.getItem(i))
+            val dial = VehicleStopsDialogFragment(adapter1.getItem(i))
             dial.show(fragmentManager, "VehicleStopsDialogFragment")
             true
         }
@@ -234,8 +234,6 @@ class ActiveVehicleListFragment(private val routeModel: RouteModel, private val 
     }
 
     private fun calcDistanceForAll() {
-
-        var direction = 0
 
         for (item in listDirection) {
 

@@ -39,5 +39,10 @@
     <string name="cs_button">Find a scooter</string>
     <string name="cs_pop_title">City Scooter</string>
     <string name="cs_battery">Battery left:</string>
+    <string name="survey_advise">Alerts</string>
+    <string name="away">meters away</string>
+    <string name="kmaway">km away</string>
+    <string name="maway">meters away</string>
+    <string name="stops">Stops</string>
 
 </resources>

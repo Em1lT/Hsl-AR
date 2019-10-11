@@ -10,7 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.hslar.Model.FuzzyTripModel
 import com.example.hslar.R
-
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class NextStopsAdapter (var mCtx: Context, var resource: Int, var items: List<FuzzyTripModel>) :
@@ -27,23 +28,27 @@ class NextStopsAdapter (var mCtx: Context, var resource: Int, var items: List<Fu
         val routeLine: ImageView = view.findViewById(R.id.routeLine)
 
 
-        if(items[position].event == 1){
+        if(items[position].firstOrLast == 1){
             routeLine.setImageResource(R.drawable.bottom)
         }
-        if(items[position].event == 2){
+        if(items[position].firstOrLast == 2){
             routeLine.setImageResource(R.drawable.up)
+        }
+        if(items[position].active == true){
+            busCurrent.visibility = View.VISIBLE
         }
         val mFuzzyTrip = items[position]
 
-        stopTime.text = turnToDate(mFuzzyTrip.schedulerArrival)
+
+        stopTime.text = "${turnToDate(mFuzzyTrip.schedulerArrival - 7200)}"
 
         busStopName.text = mFuzzyTrip.stopModelSimple.name
         return view
 
     }
     @SuppressLint("SimpleDateFormat")
-    fun turnToDate(epoch: Long): String{
-        return java.text.SimpleDateFormat("HH:mm:ss").format(java.util.Date(epoch * 1000))
+    fun turnToDate(epoch: Int): String{
+        return java.text.SimpleDateFormat("HH:mm:ss").format(Date(epoch.toLong() * 1000))
     }
 
 }

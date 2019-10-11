@@ -1,5 +1,6 @@
 package com.example.hslar.Adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import kotlin.math.roundToInt
 class StopListAdapter(var mCtx: Context, var resource: Int, var items: List<StopModel>)
     : ArrayAdapter<StopModel>(mCtx, resource, items){
 
+    @SuppressLint("SetTextI18n", "ResourceType")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
         val layoutInflater: LayoutInflater = LayoutInflater.from(mCtx)
@@ -30,9 +32,9 @@ class StopListAdapter(var mCtx: Context, var resource: Int, var items: List<Stop
         desc.text = mItems.name
         zoneId.text = mItems.zoneId
         if(mItems.dist.toDouble() > 1000){
-            dist.text = "${"%.2f".format(mItems.dist.toDouble() / 1000)} km to nearest stop"
+            dist.text = "${"%.2f".format(mItems.dist.toDouble() / 1000)} ${context.getString(R.string.kmaway)}"
         } else {
-            dist.text = "${(mItems.dist.toDouble()).roundToInt()} meters to nearest stop"
+            dist.text = "${(mItems.dist.toDouble()).roundToInt()} ${context.getString(R.string.maway)}"
         }
         return view
     }

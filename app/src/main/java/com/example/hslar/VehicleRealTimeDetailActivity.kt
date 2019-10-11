@@ -174,9 +174,6 @@ class VehicleRealTimeDetailActivity : AppCompatActivity(), Observer, OnButtonCli
                 Toast.makeText(this, "Notification already set", Toast.LENGTH_LONG).show()
             }
         }
-        bAr.setOnClickListener {
-            //TODO: AR ELEMENT, could be made with Unity and combine to activity??
-        }
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -457,9 +454,6 @@ class VehicleRealTimeDetailActivity : AppCompatActivity(), Observer, OnButtonCli
         vehicleInfo.dist = dis.toString()
         checkStation(newVehicleInfo.stop)
         speed.text = (newVehicleInfo.speed.toDouble() * 3.6).roundToInt().toString() + " km/h"
-        lat.text = newVehicleInfo.lat
-        longi.text = newVehicleInfo.longi
-        odo.text = newVehicleInfo.odo
         if (dis > 1000) {
             dist.text = "${("%.2f".format(vehicleInfo.dist.toDouble() / 1000))} km"
         } else {
@@ -470,8 +464,6 @@ class VehicleRealTimeDetailActivity : AppCompatActivity(), Observer, OnButtonCli
         } else {
             drs.text = getString(R.string.doorOpen)
         }
-        event.text = newVehicleInfo.event
-        hdg.text = newVehicleInfo.hdg
 
         if (followBus) {
             moveCameraToLocation(busLocation)
