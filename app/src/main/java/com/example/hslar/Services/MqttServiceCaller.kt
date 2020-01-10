@@ -1,5 +1,6 @@
 package com.example.hslar.Services
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -15,6 +16,7 @@ import org.json.JSONObject
  * Using to communicate to the mqtt service. Connecting to the client, subsricing to it. disconnet & unsubscribe.
  * This has more explained because this is complex
  */
+@SuppressLint("LogNotTimber")
 class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
 
     val TAG = "Main"
@@ -33,7 +35,7 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
         Log.d(TAG, "connecting to client")
 
         try {
-            var token = client.connect()
+            val token = client.connect()
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     connection = true
@@ -120,6 +122,7 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
                     toast.show()
                 }
 
+                @SuppressLint("LogNotTimber")
                 override fun onFailure(
                     asyncActionToken: IMqttToken,
                     exception: Throwable
@@ -135,12 +138,13 @@ class MqttServiceCaller(val context: Context, val topic: String) : Runnable {
         }
 
     }
-
+    @SuppressLint("LogNotTimber")
     fun unsubscribe(topic: String) {
 
         try {
             val unsubToken = client.unsubscribe(topic)
             unsubToken.actionCallback = object : IMqttActionListener {
+
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // The subscription could successfully be removed from the client
                     Log.d("Main", "unsubscribe success")

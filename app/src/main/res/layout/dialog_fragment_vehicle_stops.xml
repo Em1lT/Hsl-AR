@@ -31,7 +31,7 @@
             <TextView
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:text="Next stops"
+                    android:layout_height="wrap_content" android:text="@string/stops"
                     android:paddingTop="15dp"
                     android:paddingBottom="10dp"
                     android:textColor="@color/black"

@@ -1,4 +1,4 @@
 package com.example.hslar.Model
 
-data class FuzzyTripModel (val schedulerArrival: Long, val realtimeArrival: Long, val stopModelSimple: StopModelVerySimple, var event: Int?)
+data class FuzzyTripModel (val schedulerArrival: Int, val realtimeArrival: Int, val stopModelSimple: StopModelVerySimple, var firstOrLast: Int?, var active: Boolean?)
 data class StopModelVerySimple(val name: String)

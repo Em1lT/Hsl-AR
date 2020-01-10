@@ -5,12 +5,12 @@
     <string name="busline">linjan numero</string>
     <string name="check">hae</string>
     <string name="vehicleInfo">bussi</string>
-    <string name="speed">nopeus</string>
+    <string name="speed">Nopeus</string>
     <string name="lat">lat</string>
     <string name="longi">long</string>
-    <string name="door_status">bussin ovet</string>
+    <string name="door_status">Ovet</string>
     <string name="odo">matkan pituus</string>
-    <string name="stop">pysäkki</string>
+    <string name="stop">Pysäkki</string>
     <string name="event">tapahtuma</string>
     <string name="heading">suunta</string>
     <string name="sort">järjestele</string>
@@ -21,7 +21,7 @@
     <string name="simple">Helppo</string>
     <string name="detailed">Yksityiskohtainen</string>
     <string name="dist_meter">metriä</string>
-
+    <string name="away">metrin päässä</string>
     <!-- CB -->
     <string name="rent_title">Vuokraa pyörä</string>
     <string name="retutn_title">Palauta pyörä</string>
@@ -39,4 +39,9 @@
     <string name="cs_button">Löydä potkulauta</string>
     <string name="cs_pop_title">Sähköpotkulauta</string>
     <string name="cs_battery">Akun lataus:</string>
+    <string name="survey_advise">ilmoitukset</string>
+    <string name="kmaway">km päässä</string>
+    <string name="maway">metrin päässä</string>
+    <string name="stops">Pysäkit</string>
+
 </resources>

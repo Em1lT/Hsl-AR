@@ -19,29 +19,23 @@
 
 
         <TextView
-                android:text="114"
-                android:textSize="30dp"
+                android:text=""
+                android:textSize="30sp"
                 android:background="@drawable/check_button_toggle_left"
                 android:gravity="center"
                 android:layout_width="113dp"
                 android:layout_height="match_parent" android:id="@+id/busNum"/>
         <TextView
-                android:text="leppävaara"
+                android:text=""
                 android:layout_width="120dp"
                 android:background="@drawable/check_button_toggle_right"
                 android:gravity="center"
                 android:layout_height="match_parent" android:id="@+id/endStop"/>
         <ImageButton
                 android:src="@drawable/ic_notifications_black_24dp"
-                android:layout_width="40dp"
+                android:layout_width="0dp"
                 android:background="@drawable/check_button"
                 android:layout_height="match_parent" android:id="@+id/bNotification" android:layout_weight="1"/>
-
-        <Button
-                android:text="AR"
-                android:layout_width="40dp"
-                android:background="@drawable/check_button"
-                android:layout_height="match_parent" android:id="@+id/bAr" android:layout_weight="1"/>
 
     </LinearLayout>
     <LinearLayout
@@ -51,8 +45,6 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:paddingBottom="24dp"
-            android:elevation="10dp"
-            android:background="@android:color/white"
             android:id="@+id/linearLayout3">
 
         <LinearLayout
@@ -63,52 +55,50 @@
             <TextView
                     android:text="@string/speed"
                     android:gravity="center"
+                    android:background="@drawable/check_button_toggle_left"
+                    android:paddingTop="7dp"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="3dp"
+                    android:paddingBottom="7dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:text="@string/lat"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:text="@string/longi"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-
                     android:layout_height="wrap_content"/>
 
-            <TextView
-                    android:text="@string/odo"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="wrap_content"/>
+
             <TextView
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="3dp"
+                    android:textSize="16sp"
+                    android:background="@drawable/check_button_toggle_left"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:gravity="center"
                     android:layout_height="wrap_content" android:text="@string/distance"/>
             <TextView
                     android:text="@string/door_status"
                     android:layout_width="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/check_button_toggle_left"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:gravity="center"
 
                     android:layout_height="wrap_content"/>
             <TextView
                     android:text="@string/stop"
                     android:layout_width="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:background="@drawable/check_button_toggle_left"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:gravity="center"
                     android:layout_height="wrap_content"/>
 
-            <TextView
-                    android:text="@string/event"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:text="@string/heading"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="wrap_content"/>
 
         </LinearLayout>
         <LinearLayout
@@ -117,54 +107,48 @@
                 android:layout_height="match_parent" android:layout_weight="1">
 
             <TextView
-                    android:text="speed"
+                    android:text=""
                     android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/check_button_toggle_right"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/speed"/>
             <TextView
-                    android:text="lat"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/lat"/>
-            <TextView
-                    android:text="long"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-
-                    android:layout_height="wrap_content" android:id="@+id/longi"/>
-
-            <TextView
-                    android:text="odo"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="wrap_content" android:id="@+id/odo"/>
-            <TextView
                     android:id="@+id/dist"
                     android:layout_width="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/check_button_toggle_right"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:gravity="center"
-                    android:layout_height="wrap_content" android:text="dist"/>
+                    android:layout_height="wrap_content" android:text=""/>
             <TextView
-                    android:text="door status"
+                    android:text=""
                     android:layout_width="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/check_button_toggle_right"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:gravity="center"
-
                     android:layout_height="wrap_content" android:id="@+id/drs"/>
             <TextView
-                    android:text="stop"
+                    android:text=""
+                    android:background="@drawable/check_button_toggle_right"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:gravity="center"
                     android:layout_height="wrap_content" android:id="@+id/stop"/>
-
-            <TextView
-                    android:text="event"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="wrap_content" android:id="@+id/event"/>
-            <TextView
-                    android:text="heading"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:layout_height="wrap_content" android:id="@+id/hdg"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -194,7 +178,7 @@
                  android:background="@drawable/check_button"
                  android:id="@+id/showNavi"
                  android:layout_marginLeft="277dp"
-                 android:layout_marginTop="310dp"
+                 android:layout_marginTop="350dp"
                  android:src="@drawable/ic_dehaze_black_24dp" android:layout_weight="1"/>
 
     <LinearLayout
@@ -225,28 +209,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:id="@+id/navigationMenuVertical"
-            android:visibility="invisible"
-            android:layout_marginLeft="287dp"
-            android:layout_marginBottom="250dp"
-            android:layout_marginTop="340dp">
-
-
-        <ImageButton android:layout_width="match_parent" android:layout_height="match_parent"
-                     android:background="@drawable/check_button_toggle_left"
-                     android:id="@+id/bChangeRoute"
-                     android:src="@drawable/ic_store_black_24dp" android:layout_weight="1"/>
-
-        <ImageButton android:layout_width="match_parent" android:layout_height="match_parent"
-                     android:background="@drawable/check_button_toggle_middle"
-                     android:id="@+id/drivingOrWalking"
-                     android:src="@drawable/ic_directions_bus_orange_24dp" android:layout_weight="1"/>
-
-    </LinearLayout>
 
 
 </RelativeLayout>
