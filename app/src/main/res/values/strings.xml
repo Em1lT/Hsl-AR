@@ -22,7 +22,7 @@
     <string name="retutn_title">Return a bike</string>
     <string name="scooter_title">Find a scooter</string>
 
-    <string name="access_token" translatable="false"></string>
+    <string name="access_token" translatable="false">pk.eyJ1IjoiZW0xbHQiLCJhIjoiY2sxNmN3d2l1MDJ0ejNjcGJscjI3dWpheCJ9.11koZVBLPLKsPfVwBuKaBQ</string>
     <string name="citybikes">CityBikes</string>
     <string name="distance">Distance from the stop</string>
     <string name="simple">Simple</string>
